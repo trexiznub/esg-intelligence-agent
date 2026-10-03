@@ -109,7 +109,7 @@ blockquote{margin:8px 0 16px;padding:12px 16px;border-left:3px solid var(--g);ba
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* Same-origin when served by the backend; direct URL if the file is opened from disk */
-const API=location.protocol==='file:'?'http://127.0.0.1:8001':'';
+const API='https://esg-intelligence-agent.onrender.com';
 
 /* ---------- Demo (MOCK, fictional) ---------- */
 const DEMO={demo:true,meta:{company:'Meridian Components Ltd (fictional)',type:'Mock Sustainability Report',year:'FY2025',pages:42},
