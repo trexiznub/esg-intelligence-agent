@@ -7,6 +7,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap');
 :root{--bg:#07110d;--s1:#0c1b14;--s2:#112519;--g:#2fbf71;--gb:#6ee7a8;--gd:#15803d;--tx:#eef5f0;--ts:#b3c4ba;--tm:#76887e;--bd:rgba(110,231,168,.14);--bds:rgba(110,231,168,.32);--am:#e0a43a;--rd:#e5675f;--r:14px;--ez:cubic-bezier(.2,.7,.2,1)}
 *{box-sizing:border-box}html{scroll-behavior:smooth}
+.site-footer {
+  margin-top: 60px;
+  padding: 24px 20px;
+  text-align: center;
+  border-top: 1px solid rgba(57, 255, 136, 0.12);
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+
+.site-footer p {
+  margin: 0;
+}
 body{margin:0;min-height:100vh;font:15px/1.65 'Inter',system-ui,sans-serif;color:var(--tx);background:radial-gradient(circle at 85% 0,rgba(47,191,113,.1),transparent 32%),radial-gradient(circle at 5% 25%,rgba(21,128,61,.07),transparent 30%),var(--bg);padding-bottom:env(safe-area-inset-bottom,0px)}
 body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:linear-gradient(rgba(110,231,168,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(110,231,168,.025) 1px,transparent 1px);background-size:44px 44px}
 h1,h2,h3,button,.logo,th,.tag,.k,.big{font-family:'Space Grotesk','Inter',sans-serif}
@@ -209,4 +222,7 @@ function bindDrop(){const d=$('#drop'),fi=$('#fi');if(!d)return;
 document.addEventListener('click',e=>{const b=e.target.closest('.btn,.tabs button,nav button');if(!b)return;const r=b.getBoundingClientRect(),s=Math.max(r.width,r.height)/2,d=document.createElement('span');
   d.className='ripple';d.style.cssText=`width:${s}px;height:${s}px;left:${e.clientX-r.left-s/2}px;top:${e.clientY-r.top-s/2}px`;b.appendChild(d);setTimeout(()=>d.remove(),650)});
 render('page');
+<footer class="site-footer">
+  <p>© 2026 Ujwal Raj K.P. · Built for smarter sustainability intelligence.</p>
+</footer>
 </script></body></html>
