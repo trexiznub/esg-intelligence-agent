@@ -1,12 +1,14 @@
 import os, tempfile, threading, uuid
 from dotenv import load_dotenv
 from pathlib import Path
+
 load_dotenv(Path(__file__).parent / ".env")
+
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from backend import pipeline
 
-app = FastAPI()
+app = FastAPI(title="ESG Intelligence Agent")
 
 app.add_middleware(
     CORSMiddleware,
@@ -21,7 +23,6 @@ app.add_middleware(
 )
 
 MAX_MB = 25
-app = FastAPI(title="ESG Intelligence Agent")
 JOBS = {}
 
 @app.get("/api/health")
