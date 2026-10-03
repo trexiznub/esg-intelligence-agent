@@ -1,9 +1,7 @@
 import os, tempfile, threading, uuid
-from pathlib import Path
 from dotenv import load_dotenv
 load_dotenv(Path(__file__).parent / ".env")
 from fastapi import FastAPI, File, HTTPException, UploadFile
-from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from backend import pipeline
 
@@ -85,4 +83,4 @@ def job(job_id: str):
     if job_id not in JOBS: raise HTTPException(404, "Unknown job.")
     return JOBS[job_id]
 
-app.mount("/", StaticFiles(directory=Path(__file__).parent.parent / "frontend", html=True), name="ui")
+
