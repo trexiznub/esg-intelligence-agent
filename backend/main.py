@@ -12,6 +12,7 @@ app.add_middleware(
     allow_origins=[
         "http://127.0.0.1:5501",
         "http://localhost:5501",
+        "https://trexiznub.github.io",
     ],
     allow_credentials=True,
     allow_methods=["*"],
