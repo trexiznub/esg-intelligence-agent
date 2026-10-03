@@ -1,5 +1,6 @@
 import os, tempfile, threading, uuid
 from dotenv import load_dotenv
+from pathlib import Path
 load_dotenv(Path(__file__).parent / ".env")
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
