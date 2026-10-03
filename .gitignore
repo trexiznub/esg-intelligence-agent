@@ -1,0 +1,29 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+# Environment / secrets
+.env
+*.env
+backend/.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+.venv/
+venv/
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+*.log
