@@ -222,7 +222,8 @@ function bindDrop(){const d=$('#drop'),fi=$('#fi');if(!d)return;
 document.addEventListener('click',e=>{const b=e.target.closest('.btn,.tabs button,nav button');if(!b)return;const r=b.getBoundingClientRect(),s=Math.max(r.width,r.height)/2,d=document.createElement('span');
   d.className='ripple';d.style.cssText=`width:${s}px;height:${s}px;left:${e.clientX-r.left-s/2}px;top:${e.clientY-r.top-s/2}px`;b.appendChild(d);setTimeout(()=>d.remove(),650)});
 render('page');
+</script>
 <footer class="site-footer">
   <p>© 2026 Ujwal Raj K.P. · Built for smarter sustainability intelligence.</p>
 </footer>
-</script></body></html>
+</body></html>
