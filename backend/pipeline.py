@@ -67,26 +67,197 @@ EXCERPTS:
 def validate(items, cat, pages):
     folded = [(p["n"], p["text"], fold(p["text"])) for p in pages]
     out = []
+
+    def find_evidence(quote, page_hint=None):
+        """
+        Find source evidence even when the LLM quote contains
+        ellipses or compressed sections.
+        """
+        raw_quote = str(quote or "").strip()
+
+        if not raw_quote:
+            return None
+
+        # Normalize common ellipsis forms
+        normalized_quote = (
+            raw_quote
+            .replace("…", "...")
+            .replace("\r", " ")
+            .replace("\n", " ")
+        )
+
+        # Split the quote into meaningful chunks around ellipses
+        chunks = [
+            fold(x).strip()
+            for x in re.split(r"\.{3,}", normalized_quote)
+            if fold(x).strip()
+        ]
+
+        # If there are no ellipses, try the original quote first
+        if len(chunks) == 1:
+            exact_q = chunks[0]
+
+            preferred = [
+                p for p in folded
+                if page_hint is not None and p[0] == page_hint
+            ]
+
+            search_pages = preferred + [
+                p for p in folded if p not in preferred
+            ]
+
+            for p in search_pages:
+                if exact_q in p[2]:
+                    start = p[2].find(exact_q)
+                    return {
+                        "page": p[0],
+                        "context": p[1][max(0, start - 250): start + len(exact_q) + 250],
+                        "matched": exact_q,
+                    }
+
+        # For ellipsized quotes, match meaningful chunks individually
+        candidates = []
+
+        preferred = [
+            p for p in folded
+            if page_hint is not None and p[0] == page_hint
+        ]
+
+        search_pages = preferred + [
+            p for p in folded if p not in preferred
+        ]
+
+        for p in search_pages:
+            matches = []
+
+            for chunk in chunks:
+                # Ignore extremely short fragments
+                if len(chunk) < 8:
+                    continue
+
+                pos = p[2].find(chunk)
+
+                if pos != -1:
+                    matches.append((pos, chunk))
+
+            # Require meaningful evidence:
+            # - at least 2 chunks for an ellipsized quote, OR
+            # - one substantial chunk (40+ characters)
+            if len(matches) >= 2 or (
+                len(matches) == 1 and len(matches[0][1]) >= 40
+            ):
+                matches.sort(key=lambda x: x[0])
+
+                start = max(0, matches[0][0] - 250)
+                end = min(
+                    len(p[1]),
+                    matches[-1][0] + len(matches[-1][1]) + 250
+                )
+
+                candidates.append({
+                    "page": p[0],
+                    "context": p[1][start:end],
+                    "matched": " ... ".join(x[1] for x in matches),
+                    "match_count": len(matches),
+                })
+
+        if candidates:
+            # Prefer the page with the most independently matched chunks
+            candidates.sort(
+                key=lambda x: x.get("match_count", 0),
+                reverse=True
+            )
+            return candidates[0]
+
+        return None
+
     for topic, _ in TOPICS[cat]:
-        it = next((x for x in items if isinstance(x, dict) and fold(x.get("topic")) == fold(topic)), None)
-        if not it or it.get("status") == "Not found" or not it.get("quote"):
-            out.append({"topic": topic, "status": "Not found", "value": "", "year": "", "page": None, "confidence": "", "quote": "", "context": "", "note": ""})
+        it = next(
+            (
+                x for x in items
+                if isinstance(x, dict)
+                and fold(x.get("topic")) == fold(topic)
+            ),
+            None
+        )
+
+        if (
+            not it
+            or it.get("status") == "Not found"
+            or not it.get("quote")
+        ):
+            out.append({
+                "topic": topic,
+                "status": "Not found",
+                "value": "",
+                "year": "",
+                "page": None,
+                "confidence": "",
+                "quote": "",
+                "context": "",
+                "note": ""
+            })
             continue
-        q = fold(it["quote"])
-        hit = next((p for p in folded if p[0] == it.get("page") and q in p[2]), None) or next((p for p in folded if q in p[2]), None)
-        status, conf, note, ctx, page = it.get("status", "Inferred"), "High", "", "", it.get("page")
-        if not hit:
-            status, conf, note = "Inferred", "Low", "Quote not found verbatim in document; treat as unsupported."
+
+        evidence = find_evidence(
+            it.get("quote"),
+            it.get("page")
+        )
+
+        status = it.get("status", "Inferred")
+        conf = "High"
+        note = ""
+        ctx = ""
+        page = it.get("page")
+
+        if not evidence:
+            status = "Inferred"
+            conf = "Low"
+            note = (
+                "Supporting evidence could not be reliably located "
+                "in the source document; treat as unsupported."
+            )
+
         else:
-            page = hit[0]
-            i = hit[2].find(q)
-            ctx = q[:300]
-            nums = [n.replace(",", "") for n in re.findall(r"\d[\d,\.]*", str(it.get("value", "")))]
-            if any(n not in q.replace(",", "") for n in nums):
-                conf, note = "Low", "Value not fully matched in quote."
-            elif status == "Inferred": conf = "Low"
-            elif not it.get("year"): conf = "Medium"
-        out.append({"topic": topic, "status": status, "value": it.get("value", ""), "year": it.get("year", ""), "page": page, "confidence": conf, "quote": it["quote"], "context": ctx, "note": note})
+            page = evidence["page"]
+            ctx = evidence["context"]
+
+            # Validate reported numeric values against the actual
+            # source evidence rather than the LLM-generated quote.
+            source_text = fold(ctx)
+
+            nums = re.findall(
+                r"\d[\d,]*(?:\.\d+)?",
+                str(it.get("value", ""))
+            )
+
+            normalized_source = source_text.replace(",", "")
+
+            if any(
+                n.replace(",", "") not in normalized_source
+                for n in nums
+            ):
+                conf = "Low"
+                note = "Value not fully matched in source evidence."
+
+            elif status == "Inferred":
+                conf = "Low"
+
+            elif not it.get("year"):
+                conf = "Medium"
+
+        out.append({
+            "topic": topic,
+            "status": status,
+            "value": it.get("value", ""),
+            "year": it.get("year", ""),
+            "page": page,
+            "confidence": conf,
+            "quote": it["quote"],
+            "context": ctx,
+            "note": note
+        })
+
     return out
 
 # ---------- 5. Gap analysis (rule-based) ----------
