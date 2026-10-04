@@ -330,9 +330,10 @@ def run(job, path):
         stage(4, "Validating findings...")
         findings = {c: validate(raw[c], c, pages) for c in raw}
         stage(5, "Identifying gaps...")
-        find_gaps(findings)
+        gaps = find_gaps(findings)
         stage(6, "Generating insights...")
         ins = generate_insights(findings)
+        ins["gaps"] = gaps
         job.update(status="done", stage=7, msg="Analysis complete",
                    result={"meta": {"company": meta.get("company"), "type": meta.get("type"), "year": meta.get("year"), "pages": len(pages)}, "f": findings, "ins": ins})
     except Exception as e:  # surfaced to the UI, never swallowed
