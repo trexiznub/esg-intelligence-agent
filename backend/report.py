@@ -576,25 +576,25 @@ def generate_report(result, output_path):
 
         for item in items:
 
-            evidence_data.append(
-                [
-                    _safe(item.get("topic")),
-                    _status_label(item.get("status")),
-                    _safe(item.get("value"), "—"),
-                    _safe(item.get("page"), "—"),
-                    _safe(item.get("confidence"), "—"),
-                ]
-            )
+          evidence_data.append(
+    [
+            Paragraph(_safe(item.get("topic")), small_style),
+            Paragraph(_status_label(item.get("status")), small_style),
+            Paragraph(_safe(item.get("value"), "—"), small_style),
+            Paragraph(_safe(item.get("page"), "—"), small_style),
+            Paragraph(_safe(item.get("confidence"), "—"), small_style),
+    ]
+)
 
         evidence_table = Table(
             evidence_data,
             colWidths=[
-                52 * mm,
-                32 * mm,
-                43 * mm,
-                18 * mm,
-                30 * mm,
-            ],
+                  38 * mm,
+                  25 * mm,
+                  72 * mm,
+                  15 * mm,
+                  20 * mm,
+                ],
             repeatRows=1,
         )
 
