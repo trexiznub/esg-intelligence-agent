@@ -30,7 +30,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-MAX_MB = 25
+MAX_MB = 100
 JOBS = {}
 
 
