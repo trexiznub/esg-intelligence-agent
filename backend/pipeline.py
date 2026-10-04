@@ -204,11 +204,47 @@ def validate(items, cat, pages):
             it.get("page")
         )
 
-        status = it.get("status", "Inferred")
+
+        raw_status = str(it.get("status", "Inferred")).strip().lower()
+
+        if raw_status in {"disclosed", "found", "directly identified", "supported"}:
+            status = "Found"
+        elif raw_status in {
+            "requires further verification",
+            "needs verification",
+            "verify",
+            "verification required",
+        }:
+            status = "Requires further verification"
+        elif raw_status in {"not found", "missing", "not identified"}:
+            status = "Not found"
+        else:
+            status = "Inferred"
+
         conf = "High"
         note = ""
         ctx = ""
         page = it.get("page")
+
+
+        if not evidence:
+            status = "Inferred"
+            conf = "Low"
+            note = (
+                "Supporting evidence could not be reliably located "
+                "in the source document; treat as unsupported."
+            )
+
+        else:
+            page = evidence["page"]
+            ctx = evidence["context"]
+
+            if status == "Inferred":
+                conf = "Low"
+            elif status == "Requires further verification":
+                conf = "Medium"
+            else:
+                status = "Found"
 
         if not evidence:
             status = "Inferred"
