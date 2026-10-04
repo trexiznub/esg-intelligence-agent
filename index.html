@@ -151,6 +151,8 @@ function setTab(t){S.tab=t;render('tab')}
 function gaps(f){return Object.entries(f).flatMap(([c,l])=>l.filter(x=>x.status==='Not found'||x.confidence==='Low').map(x=>({cat:c,topic:x.topic,why:x.status==='Not found'?'Not identified in analysed document':'Weakly supported; requires further verification'})))}
 
 /* ---------- Orchestrator: uploads to backend, polls real stage status ---------- */
+let completedJobId = null;
+
 function uploadFile(file){return new Promise((ok,no)=>{const x=new XMLHttpRequest();x.open('POST',API+'/api/analyse');
   x.upload.onprogress=e=>{if(e.lengthComputable){S.prog=e.loaded/e.total;S.msg='Uploading...';const b=$('#pb');b&&(b.style.width=Math.round(S.prog*100)+'%');const m=$('#pmsg');m&&(m.textContent=S.msg)}};
   x.onload=()=>{let j={};try{j=JSON.parse(x.responseText)}catch(e){}x.status<300?ok(j):no({message:j.detail||'Upload failed.'})};
@@ -161,6 +163,7 @@ async function runAnalysis(file){
   S.err='';S.busy=true;S.res=null;S.file=file;S.prog=0;S.stages=[];S.msg='Uploading...';render();
   try{
     const {job_id}=await uploadFile(file);
+completedJobId = job_id;
     while(true){const r=await fetch(API+'/api/jobs/'+job_id);if(!r.ok)throw{message:'Lost track of the analysis job.'};const j=await r.json();
       if(j.status==='error')throw{message:j.error};
       S.stages=STAGES.map((_,k)=>k<j.stage?'done':k===j.stage?'run':'');S.msg=j.msg;S.prog=j.progress||0;
@@ -176,14 +179,14 @@ function reportMD(){const r=S.res,g=gaps(r.f);let m=`# ESG Analysis Report${r.de
   m+=`\n\n## Source references\n`+Object.values(r.f).flat().filter(x=>x.page).map(x=>`- ${x.topic}, page ${x.page}: "${x.quote}"`).join('\n');
   m+=`\n\n## AI limitations\nAI-assisted prototype. Not an ESG rating, assurance opinion, investment recommendation or compliance determination. Extraction may miss or misread content (tables, scanned pages); verify all findings against the source document.\n`;return m}
 async function exportReport(){
-  if(!job_id){
+  if(!completedJobId){
     alert('No completed analysis is available.');
     return;
   }
 
   try{
     const response = await fetch(
-      API + '/api/jobs/' + job_id + '/report'
+      API + '/api/jobs/' + completedJobId + '/report'
     );
 
     if(!response.ok){
