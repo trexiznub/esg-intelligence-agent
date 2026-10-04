@@ -175,7 +175,40 @@ function reportMD(){const r=S.res,g=gaps(r.f);let m=`# ESG Analysis Report${r.de
   m+=`\n\n## Disclosure gaps\n`+g.map(x=>`- ${x.cat}: ${x.topic} – ${x.why}`).join('\n');
   m+=`\n\n## Source references\n`+Object.values(r.f).flat().filter(x=>x.page).map(x=>`- ${x.topic}, page ${x.page}: "${x.quote}"`).join('\n');
   m+=`\n\n## AI limitations\nAI-assisted prototype. Not an ESG rating, assurance opinion, investment recommendation or compliance determination. Extraction may miss or misread content (tables, scanned pages); verify all findings against the source document.\n`;return m}
-function exportReport(){const u=URL.createObjectURL(new Blob([reportMD()],{type:'text/markdown'}));const a=document.createElement('a');a.href=u;a.download='esg-analysis-report.md';a.click();URL.revokeObjectURL(u)}
+async function exportReport(){
+  if(!job_id){
+    alert('No completed analysis is available.');
+    return;
+  }
+
+  try{
+    const response = await fetch(
+      API + '/api/jobs/' + job_id + '/report'
+    );
+
+    if(!response.ok){
+      const text = await response.text();
+      throw new Error(text || 'Could not generate PDF report.');
+    }
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'ESG_Intelligence_Report.pdf';
+
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    URL.revokeObjectURL(url);
+
+  }catch(error){
+    console.error('PDF download failed:', error);
+    alert('PDF download failed: ' + (error.message || error));
+  }
+}
 
 /* ---------- Views ---------- */
 const ICON=['<path d="M4 5h16M4 12h16M4 19h10"/>','<circle cx="11" cy="11" r="6"/><path d="m20 20-4-4"/>','<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18"/>'].map(p=>`<svg viewBox="0 0 24 24">${p}</svg>`);

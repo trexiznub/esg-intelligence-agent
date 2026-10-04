@@ -3,6 +3,10 @@ import tempfile
 import threading
 import uuid
 from pathlib import Path
+from fastapi.responses import FileResponse
+from backend.report import generate_report
+
+
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, HTTPException, UploadFile
@@ -90,3 +94,59 @@ def job(job_id: str):
         raise HTTPException(404, "Unknown job.")
 
     return JOBS[job_id]
+
+@app.get("/api/jobs/{job_id}/report")
+def download_report(job_id: str):
+    if job_id not in JOBS:
+        raise HTTPException(404, "Unknown job.")
+
+    job_data = JOBS[job_id]
+
+    if job_data.get("status") != "done":
+        raise HTTPException(
+            400,
+            "Report is not ready yet."
+        )
+
+    result = job_data.get("result")
+
+    if not result:
+        raise HTTPException(
+            500,
+            "Analysis result is unavailable."
+        )
+
+    fd, report_path = tempfile.mkstemp(suffix=".pdf")
+    os.close(fd)
+
+    try:
+        generate_report(result, report_path)
+
+        company = (
+            result.get("meta", {}).get("company")
+            or "ESG_Report"
+        )
+
+        safe_company = "".join(
+            c if c.isalnum() or c in " -_" else "_"
+            for c in company
+        ).strip()
+
+        filename = f"{safe_company}_ESG_Intelligence_Report.pdf"
+
+        return FileResponse(
+            report_path,
+            media_type="application/pdf",
+            filename=filename,
+        )
+
+    except Exception as e:
+        try:
+            os.remove(report_path)
+        except OSError:
+            pass
+
+        raise HTTPException(
+            500,
+            f"Could not generate PDF report: {str(e)}"
+        )
