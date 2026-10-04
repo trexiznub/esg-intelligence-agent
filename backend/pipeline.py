@@ -80,7 +80,7 @@ def validate(items, cat, pages):
         else:
             page = hit[0]
             i = hit[2].find(q)
-            ctx = hit[1][max(0, i - 300): i + len(q) + 300]
+            ctx = q[:300]
             nums = [n.replace(",", "") for n in re.findall(r"\d[\d,\.]*", str(it.get("value", "")))]
             if any(n not in q.replace(",", "") for n in nums):
                 conf, note = "Low", "Value not fully matched in quote."
