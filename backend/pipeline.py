@@ -319,10 +319,18 @@ def validate(items, cat, pages):
             page = evidence["page"]
             ctx = evidence["context"]
 
-            if status == "Inferred":
-                conf = "Low"
-            elif status == "Requires further verification":
+            # If the document directly discloses the topic and
+            # supporting evidence was successfully validated, classify
+            # the finding as Found rather than leaving the LLM status
+            # as Inferred.
+            disclosure_is_direct = disclosure_status.strip().lower() == "disclosed"
+
+            if status == "Requires further verification":
                 conf = "Medium"
+            elif disclosure_is_direct:
+                status = "Found"
+            elif status == "Inferred":
+                conf = "Low"
             else:
                 status = "Found"
 
@@ -365,6 +373,9 @@ def validate(items, cat, pages):
         out.append({
             "topic": topic,
             "status": status,
+            "disclosure_status": disclosure_status,
+            "metric_status": metric_status,
+            "metric_type": metric_type,
             "value": it.get("value", ""),
             "year": it.get("year", ""),
             "page": page,
