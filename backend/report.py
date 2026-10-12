@@ -594,7 +594,7 @@ def generate_report(result, output_path):
                   72 * mm,
                   15 * mm,
                   20 * mm,
-                ],
+],
             repeatRows=1,
         )
 
