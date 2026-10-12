@@ -399,39 +399,129 @@ def find_gaps(findings):
 
     for cat, items in findings.items():
         for item in items:
-            status = item.get("status")
-            confidence = item.get("confidence")
+            topic = item.get("topic", "")
+            status = str(item.get("status", "")).strip()
+            disclosure_status = str(item.get("disclosure_status", "")).strip()
+            metric_status = str(item.get("metric_status", "")).strip()
+            metric_type = str(item.get("metric_type", "")).strip()
+            confidence = str(item.get("confidence", "")).strip()
+            value = str(item.get("value", "")).strip()
 
-            if status == "Not found":
+            # Disclosure gap:
+            # The topic itself was not reliably identified in the analysed document.
+            if status == "Not found" or disclosure_status == "Not disclosed":
                 gaps.append({
                     "cat": cat,
-                    "topic": item["topic"],
+                    "topic": topic,
                     "type": "disclosure_gap",
                     "severity": "watch",
-                    "why": "Not identified in analysed document",
+                    "why": "The topic was not identified as a direct disclosure in the analysed document.",
                 })
+                continue
 
-            elif confidence == "Low":
+            # Verification gap:
+            # Evidence exists but needs additional verification.
+            if confidence == "Low" or status == "Requires further verification":
                 gaps.append({
                     "cat": cat,
-                    "topic": item["topic"],
+                    "topic": topic,
                     "type": "verification_required",
                     "severity": "watch",
-                    "why": "Supporting evidence requires further verification",
+                    "why": "Supporting evidence requires further verification.",
+                })
+                continue
+
+            # Metric gap:
+            # Topic is disclosed, but no usable quantitative/qualitative metric
+            # was identified by the extraction layer.
+            if (
+                disclosure_status == "Disclosed"
+                and metric_status in {"Not available", "Unclear", ""}
+                and metric_type in {"none", ""}
+            ):
+                gaps.append({
+                    "cat": cat,
+                    "topic": topic,
+                    "type": "metric_gap",
+                    "severity": "watch",
+                    "why": "The topic is disclosed, but a usable metric was not identified.",
+                })
+                continue
+
+            # Metric-status fallback for older/partial model outputs.
+            if (
+                status == "Found"
+                and metric_status in {"Not available", "Unclear"}
+                and not value
+            ):
+                gaps.append({
+                    "cat": cat,
+                    "topic": topic,
+                    "type": "metric_gap",
+                    "severity": "watch",
+                    "why": "The topic is identified, but no usable metric value was identified.",
                 })
 
     return gaps
 
-# ---------- 6. Report generation agent ----------
+
 def generate_insights(findings):
-    summ = "\n".join(f"{c}:\n" + "\n".join(f"- {x['topic']}: {x['status']}" + (f" = {x['value']}" if x['value'] else "") + (f" (p.{x['page']})" if x['page'] else "") for x in l) for c, l in findings.items())
-    return llm_json(f"""You write cautious ESG analysis notes from VALIDATED findings only. Do not add facts. Use wording like "Based on the analysed disclosure...", "The report indicates...", "Not identified in the analysed document...", "Requires further verification...".
-Return JSON: {{"highlights":[],"env":[],"social":[],"gov":[],"gaps":[],"risks":[],"investigate":[]}} with 2-4 short strings each.
+    structured = []
 
-FINDINGS:
-{summ}""")
+    for category, items in findings.items():
+        for item in items:
+            structured.append({
+                "category": category,
+                "topic": item.get("topic", ""),
+                "status": item.get("status", ""),
+                "disclosure_status": item.get("disclosure_status", ""),
+                "metric_status": item.get("metric_status", ""),
+                "metric_type": item.get("metric_type", ""),
+                "value": item.get("value", ""),
+                "year": item.get("year", ""),
+                "page": item.get("page", ""),
+                "confidence": item.get("confidence", ""),
+                "quote": item.get("quote", ""),
+            })
 
-# ---------- Orchestrator (stage indices match the UI) ----------
+    return llm_json(f"""You write cautious ESG analysis notes from VALIDATED findings only.
+
+Do not add facts that are not present in the findings.
+
+Important distinctions:
+- disclosure_status describes whether the topic itself is disclosed.
+- metric_status describes whether a usable metric was identified.
+- metric_type describes whether the evidence is a quantitative performance metric,
+  quantitative target, qualitative statement, combined metric, or none.
+- status and confidence reflect the validated evidence assessment.
+- Do not turn an inference into a direct disclosure.
+- Do not invent numerical values, targets, years, or commitments.
+- If a topic is disclosed but has no usable metric, explicitly describe that as a metric gap.
+- If evidence requires verification, explicitly say so.
+- Use wording such as:
+  "Based on the analysed disclosure..."
+  "The report indicates..."
+  "Not identified in the analysed document..."
+  "Requires further verification..."
+
+Return ONLY valid JSON in this structure:
+
+{{
+  "highlights": [],
+  "env": [],
+  "social": [],
+  "gov": [],
+  "gaps": [],
+  "risks": [],
+  "investigate": []
+}}
+
+Provide 2-4 short, evidence-based strings in each relevant section.
+
+VALIDATED FINDINGS:
+{structured}
+""")
+
 def run(job, path):
     def stage(i, msg): job.update(stage=i, msg=msg)
     try:

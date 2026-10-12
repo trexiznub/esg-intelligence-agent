@@ -447,7 +447,7 @@ def generate_report(result, output_path):
             )
 
     # ---------------------------------------------------------
-    # REPORTING GAPS
+        # REPORTING GAPS
     # ---------------------------------------------------------
 
     story.append(Spacer(1, 5 * mm))
@@ -457,22 +457,27 @@ def generate_report(result, output_path):
 
     if gaps:
         gap_data = [
-            ["Category", "Topic", "Assessment"]
+            ["Category", "Topic", "Gap Type", "Severity", "Assessment"]
         ]
 
         for gap in gaps:
             if isinstance(gap, dict):
+                gap_type = str(gap.get("type", "")).replace("_", " ").title()
+                severity = str(gap.get("severity", "")).title()
+
                 gap_data.append(
                     [
                         _category_name(gap.get("cat", "")),
                         _safe(gap.get("topic")),
+                        _safe(gap_type),
+                        _safe(severity),
                         _safe(gap.get("why")),
                     ]
                 )
 
         gap_table = Table(
             gap_data,
-            colWidths=[35 * mm, 55 * mm, 82 * mm],
+            colWidths=[27 * mm, 40 * mm, 32 * mm, 22 * mm, 51 * mm],
             repeatRows=1,
         )
 
@@ -482,12 +487,12 @@ def generate_report(result, output_path):
                     ("BACKGROUND", (0, 0), (-1, 0), DARK),
                     ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
                     ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-                    ("FONTSIZE", (0, 0), (-1, -1), 8),
+                    ("FONTSIZE", (0, 0), (-1, -1), 7.5),
                     ("GRID", (0, 0), (-1, -1), 0.4, HexColor("#d1d5db")),
                     ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, LIGHT_GREY]),
                     ("VALIGN", (0, 0), (-1, -1), "TOP"),
-                    ("TOPPADDING", (0, 0), (-1, -1), 6),
-                    ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+                    ("TOPPADDING", (0, 0), (-1, -1), 5),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
                 ]
             )
         )
@@ -501,8 +506,7 @@ def generate_report(result, output_path):
             )
         )
 
-    # ---------------------------------------------------------
-    # RISKS & INVESTIGATION
+# RISKS & INVESTIGATION
     # ---------------------------------------------------------
 
     story.append(Spacer(1, 8 * mm))

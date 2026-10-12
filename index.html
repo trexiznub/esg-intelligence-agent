@@ -145,10 +145,213 @@ ins:{highlights:['Based on the analysed disclosure, Scope 1 and 2 emissions are 
 
 /* ---------- State ---------- */
 let S={view:'home',tab:'Environmental',res:null,stages:[],msg:'',prog:0,err:'',file:null,busy:false};
+let searchResults=[];
+let searchBusy=false;
+
+async function searchCompany(){
+  const input=$('#companySearch');
+  const company=(input?.value||'').trim();
+
+  if(!company){
+    alert('Enter a company name.');
+    return;
+  }
+
+  searchBusy=true;
+  searchResults=[];
+  S.err='';
+  render();
+
+  try{
+    const response=await fetch(API+'/api/company-search',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({company})
+    });
+
+    const data=await response.json();
+
+    if(!response.ok){
+      throw new Error(data.detail||'Company search failed.');
+    }
+
+    searchResults=data.reports||[];
+  }catch(e){
+    S.err=e.message||'Company search failed.';
+  }finally{
+    searchBusy=false;
+    render();
+  }
+}
+
+async function analyseReportUrl(encodedUrl){
+  const url=decodeURIComponent(encodedUrl);
+
+  S.err='';
+  S.busy=true;
+  S.res=null;
+  S.file=null;
+  S.prog=0;
+  S.stages=[];
+  S.msg='Downloading selected report...';
+  render();
+
+  try{
+    const response=await fetch(API+'/api/analyse-url',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({url})
+    });
+
+    const data=await response.json();
+
+    if(!response.ok){
+      throw new Error(data.detail||'Could not analyse selected report.');
+    }
+
+    completedJobId=data.job_id;
+
+    while(true){
+      const r=await fetch(API+'/api/jobs/'+data.job_id);
+
+      if(!r.ok){
+        throw new Error('Lost track of the analysis job.');
+      }
+
+      const j=await r.json();
+
+      if(j.status==='error'){
+        throw new Error(j.error||'Analysis failed.');
+      }
+
+      S.stages=STAGES.map((_,k)=>
+        k<j.stage?'done':k===j.stage?'run':''
+      );
+
+      S.msg=j.msg||'Analysing...';
+      S.prog=j.progress||0;
+
+      if(j.status==='done'){
+        S.res=j.result;
+        S.busy=false;
+        S.tab='Environmental';
+        render('page');
+        return;
+      }
+
+      $('#pb')?paintPipe():render();
+      await new Promise(r=>setTimeout(r,700));
+    }
+
+  }catch(e){
+    S.busy=false;
+    S.err=e.message||'Analysis failed.';
+    S.stages=S.stages.map(x=>x==='run'?'err':x);
+    render();
+  }
+}
+
+function companySearch(){
+  return `
+    <div class="card reveal" style="margin-bottom:18px">
+      <div class="k">Report discovery</div>
+      <h3 style="font-size:20px;margin-bottom:6px">Search a Company</h3>
+      <p style="color:var(--ts);margin-bottom:14px">
+        Find publicly available sustainability, ESG, BRSR and annual reports.
+      </p>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <input
+          id="companySearch"
+          type="text"
+          placeholder="e.g. Schneider Electric"
+          onkeydown="if(event.key==='Enter')searchCompany()"
+          style="flex:1;min-width:220px;padding:12px 14px;border-radius:10px;border:1px solid var(--bds);background:var(--s1);color:var(--tx);font:inherit;outline:none"
+        >
+        <button class="btn primary" onclick="searchCompany()" ${searchBusy?'disabled':''}>
+          ${searchBusy?'Searching...':'Search'}
+        </button>
+      </div>
+
+      ${
+        searchBusy
+        ? `<p style="margin-top:14px;color:var(--tm)">Searching for relevant company reports...</p>`
+        : ''
+      }
+
+      ${
+        !searchBusy && searchResults.length
+        ? `
+          <div style="margin-top:18px">
+            <div class="k">Reports found</div>
+            <div style="display:grid;gap:10px">
+              ${searchResults.map(r=>`
+                <div class="card" style="padding:16px;background:rgba(7,17,13,.55)">
+                  <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
+                    <div>
+                      <h3>${esc(r.title||'Untitled report')}</h3>
+                      <div style="color:var(--tm);font-size:12px;margin-bottom:5px">
+                        ${esc(r.type||'Company report')} · ${esc(r.year||'See publication')}
+                      </div>
+                      <div style="color:var(--tm);font-size:12px">
+                        ${esc(r.source||'Source')}
+                      </div>
+                    </div>
+
+                    <div style="display:flex;gap:8px;align-items:center">
+                      <a class="btn sm" href="${esc(r.url)}" target="_blank" rel="noopener">Open</a>
+                      <button class="btn sm primary" onclick="analyseReportUrl('${encodeURIComponent(r.url)}')">
+                        Analyse
+                      </button>
+                    </div>
+                  </div>
+
+                  ${
+                    r.summary
+                    ? `<p style="margin-top:10px;color:var(--ts);font-size:13px">${esc(r.summary)}</p>`
+                    : ''
+                  }
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `
+        : ''
+      }
+
+      ${
+        !searchBusy && searchResults.length===0
+        ? `<p style="margin-top:14px;color:var(--tm)">Enter a company name to find reports.</p>`
+        : ''
+      }
+    </div>
+  `;
+}
+
+
 const STAGES=['Document','Extraction','Retrieval','ESG Analysis','Validation','Gap Analysis','Final Insights'];
 function go(v){S.view=v;window.scrollTo({top:0,behavior:'smooth'});render('page')}
 function setTab(t){S.tab=t;render('tab')}
-function gaps(f){return Object.entries(f).flatMap(([c,l])=>l.filter(x=>x.status==='Not found'||x.confidence==='Low').map(x=>({cat:c,topic:x.topic,why:x.status==='Not found'?'Not identified in analysed document':'Weakly supported; requires further verification'})))}
+function gaps(f){
+  return Object.entries(f).flatMap(([c,l])=>
+    l.filter(x=>
+      x.status==='Not found' ||
+      x.confidence==='Low' ||
+      x.metric_status==='Not available' ||
+      x.metric_status==='Unclear'
+    ).map(x=>({
+      cat:c,
+      topic:x.topic,
+      type:x.gap_type||'',
+      why:x.gap_reason ||
+        (x.status==='Not found'
+          ? 'Not identified in analysed document'
+          : x.confidence==='Low'
+            ? 'Supporting evidence requires further verification'
+            : 'Metric not identified')
+    }))
+  );
+}
 
 /* ---------- Orchestrator: uploads to backend, polls real stage status ---------- */
 let completedJobId = null;
@@ -225,17 +428,71 @@ function home(){return`<section class="hero"><span class="eyebrow reveal">AI-ass
 <div class="grid">${[['ESG Metric Extraction','Extract disclosed environmental, social and governance metrics.'],['Disclosure Gap Analysis','Identify areas where information appears missing, unclear, or insufficiently disclosed.'],['AI-Powered Insights','Generate structured sustainability insights from the uploaded document.']].map((c,i)=>`<div class="card feat reveal">${ICON[i]}<h3>${c[0]}</h3><p>${c[1]}</p></div>`).join('')}</div>
 <h2 class="reveal">How it works</h2><div class="flow reveal">${['Input','Document Retrieval','AI Reasoning','Validation','ESG Insights'].map(n=>`<span class="n">${n}</span>`).join('<span class="ar">→</span>')}</div>
 <div class="card reveal"><h3>Why agentic AI?</h3><p>The workflow separates document retrieval, ESG extraction, validation and gap analysis into distinct reasoning stages, allowing the system to verify information before presenting insights.</p></div>`}
-function upload(){return`<h2 class="reveal" style="margin-top:0">Document analysis</h2><div class="drop reveal" id="drop" onclick="$('#fi').click()"><svg class="up" viewBox="0 0 24 24"><path d="M12 16V4m0 0-4 4m4-4 4 4M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg><div><b>Drag and drop a PDF here</b></div><span>or click to browse · PDF only · up to 100 MB · processed by your local server</span><input id="fi" type="file" accept="application/pdf" class="hide"></div><p class="reveal" style="margin-top:16px"><button class="btn s" onclick="loadDemo()">Run Demo / Sample Analysis</button></p>`}
-function pipeline(){return`<div class="card reveal"><div class="k">Agent workflow</div>${S.file?`<p><b>${esc(S.file.name)}</b> · ${(S.file.size/1048576).toFixed(2)} MB</p>`:''}<div class="bar"><div id="pb" style="width:${Math.round(S.prog*100)}%"></div></div><p id="pmsg" style="color:var(--ts)">${esc(S.msg)}</p><div class="pipe">${STAGES.map((s,i)=>`<div class="st ${S.stages[i]||''}"><i></i>${s}</div>`).join('')}</div></div>`}
+function upload(){
+  return companySearch()+`
+    <h2 class="reveal" style="margin-top:0">Document analysis</h2>
+
+    <div class="drop reveal" id="drop" onclick="$('#fi').click()">
+      <svg class="up" viewBox="0 0 24 24">
+        <path d="M12 16V4m0 0-4 4m4-4 4 4M4 16v3a1 1 0 0 1 1 1h14a1 1 0 0 1 1-1v-3"/>
+      </svg>
+      <div><b>Drag and drop a PDF here</b></div>
+      <span>or click to browse · PDF only · up to 100 MB · processed by your local server</span>
+      <input id="fi" type="file" accept="application/pdf" class="hide">
+    </div>
+
+    <p class="reveal" style="margin-top:16px">
+      <button class="btn s" onclick="loadDemo()">Run Demo / Sample Analysis</button>
+    </p>
+  `;
+}
+
 function dash(){const r=S.res,all=Object.values(r.f).flat(),dis=all.filter(x=>x.status==='Found').length,cov=Math.round(100*dis/all.length),l=r.f[S.tab];
   return`${r.demo?'<div class="banner reveal">Demo / Sample Analysis — fictional mock company and mock data, not a real report.</div>':''}
 <div class="grid">${[['Company',r.meta.company],['Report type',r.meta.type],['Reporting year',r.meta.year]].map(a=>`<div class="card reveal"><div class="k">${a[0]}</div><b>${esc(a[1])}</b></div>`).join('')}<div class="card reveal"><div class="k">Pages analysed</div><b class="big" data-count="${+r.meta.pages||0}">${esc(r.meta.pages)}</b></div></div>
 <div class="grid">${Object.keys(r.f).map(c=>{const i=ind(r.f[c]),n=r.f[c].filter(x=>x.status==='Found').length,t=r.f[c].length;return`<div class="card reveal"><div class="k">${c}</div><span class="tag ${tagCls(i)}">${i}</span><div class="meter"><div style="--w:${Math.round(100*n/t)}%"></div></div><p style="margin-top:8px;font-size:12.5px;color:var(--tm)">${n} of ${t} topics disclosed</p></div>`}).join('')}<div class="card reveal"><div class="k">Disclosure coverage</div><b class="big" data-count="${cov}" data-suffix="%">${cov}%</b><p style="font-size:12.5px;color:var(--tm)">${dis} of ${all.length} topics explicitly disclosed</p></div></div>
 <div class="tabs reveal">${[...Object.keys(r.f),'Insights','Gaps'].map(t=>`<button class="${S.tab===t?'on':''}" onclick="setTab('${t}')">${t}</button>`).join('')}<span style="flex:1"></span><button class="btn sm" onclick="exportReport()">Export report</button></div>
-<div class="tabpane">${S.tab==='Insights'?insightsV(r):S.tab==='Gaps'?gapsV(r):`<div class="tw"><table><thead><tr><th>Metric / topic</th><th>Value or disclosure</th><th>Year</th><th>Source</th><th>Confidence</th><th>Status</th></tr></thead><tbody>${l.map(x=>`<tr><td>${esc(x.topic)}</td><td>${x.status==='Not found'?'<i style="color:var(--tm)">Not identified in analysed document</i>':esc(x.value)}</td><td>${esc(x.year||'—')}</td><td>${x.page?`Page ${x.page}<br><a class="lnk" onclick="viewSource('${S.tab}','${esc(x.topic).replace(/'/g,"\\'")}')">View source</a>`:'—'}</td><td>${x.confidence?`<span class="tag ${x.confidence}">${x.confidence}</span>`:'—'}</td><td><span class="tag ${tagCls(x.status)}">${x.status}</span></td></tr>`).join('')}</tbody></table></div>`}</div>`}
-function list(t,a){return`<div class="card"><h3>${t}</h3><ul>${(a||[]).map(x=>`<li>${esc(x)}</li>`).join('')||'<li>None generated.</li>'}</ul></div>`}
-function insightsV(r){const i=r.ins;return`<div class="grid">${list('Key ESG highlights',i.highlights)}${list('Environmental insights',i.env)}${list('Social insights',i.social)}${list('Governance insights',i.gov)}${list('Potential risk areas',i.risks)}${list('Recommended areas for further investigation',i.investigate)}</div><p style="font-size:13px;color:var(--tm)">AI-generated observations from the analysed document; not verified facts.</p>`}
-function gapsV(r){return`<div class="tw"><table><thead><tr><th>Pillar</th><th>Topic</th><th>Assessment</th></tr></thead><tbody>${gaps(r.f).map(g=>`<tr><td>${g.cat}</td><td>${esc(g.topic)}</td><td>${g.why}</td></tr>`).join('')||'<tr><td colspan=3>No gaps flagged.</td></tr>'}</tbody></table></div>`}
+<div class="tabpane">${S.tab==='Insights'?insightsV(r):S.tab==='Gaps'?gapsV(r):`<div class="tw"><table><thead><tr><th>Metric / topic</th><th>Disclosure</th><th>Metric</th><th>Type</th><th>Value</th><th>Year</th><th>Source</th><th>Confidence</th><th>Status</th></tr></thead><tbody>${l.map(x=>`<tr><td>${esc(x.topic)}</td><td>${esc(x.disclosure_status||x.status||'—')}</td><td>${esc(x.metric_status||'—')}</td><td>${esc((x.metric_type||'—').replaceAll('_',' '))}</td><td>${x.status==='Not found'?'<i style="color:var(--tm)">Not identified in analysed document</i>':esc(x.value||'—')}</td><td>${esc(x.year||'—')}</td><td>${x.page?`Page ${x.page}<br><a class="lnk" onclick="viewSource('${S.tab}','${esc(x.topic).replace(/'/g,"\\'")}')">View source</a>`:'—'}</td><td>${x.confidence?`<span class="tag ${x.confidence}">${x.confidence}</span>`:'—'}</td><td><span class="tag ${tagCls(x.status)}">${esc(x.status||'—')}</span></td></tr>`).join('')}</tbody></table></div>`}</div>`
+}
+
+function insightsV(r){
+  const i=r.ins||{};
+  return `
+    <div class="grid">
+      ${list('Key ESG highlights',i.highlights)}
+      ${list('Environmental insights',i.env)}
+      ${list('Social insights',i.social)}
+      ${list('Governance insights',i.gov)}
+      ${list('Potential risk areas',i.risks)}
+      ${list('Recommended areas for further investigation',i.investigate)}
+    </div>
+    <p style="font-size:13px;color:var(--tm)">
+      AI-generated observations from the analysed document; not verified facts.
+    </p>
+  `;
+}
+
+function gapsV(r){
+  return `<div class="tw"><table>
+    <thead><tr>
+      <th>Pillar</th>
+      <th>Topic</th>
+      <th>Gap type</th>
+      <th>Assessment</th>
+    </tr></thead>
+    <tbody>
+      ${gaps(r.f).map(g=>`
+        <tr>
+          <td>${esc(g.cat)}</td>
+          <td>${esc(g.topic)}</td>
+          <td>${esc(g.type||'—')}</td>
+          <td>${esc(g.why)}</td>
+        </tr>
+      `).join('') || '<tr><td colspan=4>No gaps flagged.</td></tr>'}
+    </tbody>
+  </table></div>`
+}
+
 function analysis(){return(S.res?'':upload())+(S.busy||S.err?pipeline():'')+(S.err?`<div class="err">${esc(S.err)}</div>`:'')+(S.res?dash():'')}
 function method(){const s=['PDF ingestion','Text extraction (page numbers preserved)','Document chunking','Retrieval (TF-IDF keyword vector search per ESG topic)','LLM-based ESG analysis','Validation (quotes and figures checked against source text)','Gap analysis','Report generation'];
   return`<h2 class="reveal" style="margin-top:0">Methodology</h2><div class="card reveal"><ol>${s.map(x=>`<li>${x}</li>`).join('')}</ol><p style="margin-top:12px">Validation is deterministic: each quote must appear verbatim in the PDF, and each number in a value must appear in that quote. Failures are downgraded to low confidence or "Inferred". Statuses: <b>Disclosed</b> (explicit), <b>Inferred</b> (indirect or unsupported), <b>Not found</b>. No numerical ESG score is produced.</p></div><div class="card reveal" style="margin-top:16px"><b>This tool is an AI-assisted research and analysis prototype. It does not provide an official ESG rating, assurance opinion, investment recommendation, or regulatory compliance determination.</b></div>`}

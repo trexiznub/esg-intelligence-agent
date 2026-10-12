@@ -13,6 +13,7 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend import pipeline
+from backend.company_search import search_company_reports
 
 load_dotenv(Path(__file__).parent / ".env")
 
@@ -33,6 +34,26 @@ app.add_middleware(
 MAX_MB = 100
 JOBS = {}
 
+
+
+
+@app.post("/api/company-search")
+def company_search(payload: dict):
+    company = str(payload.get("company", "")).strip()
+
+    if not company:
+        raise HTTPException(400, "Enter a company name.")
+
+    if len(company) > 150:
+        raise HTTPException(400, "Company name is too long.")
+
+    try:
+        return search_company_reports(company)
+    except Exception as e:
+        raise HTTPException(
+            502,
+            f"Company search failed: {str(e)[:300]}"
+        )
 
 @app.get("/api/health")
 def health():
@@ -87,6 +108,69 @@ async def analyse(file: UploadFile = File(...)):
 
     return {"job_id": job_id}
 
+
+
+
+@app.post("/api/analyse-url")
+def analyse_url(payload: dict):
+    import requests
+
+    url = str(payload.get("url", "")).strip()
+
+    if not url.startswith(("https://", "http://")):
+        raise HTTPException(400, "A valid report URL is required.")
+
+    try:
+        response = requests.get(
+            url,
+            timeout=30,
+            headers={
+                "User-Agent": "Mozilla/5.0 ESG-Intelligence-Agent"
+            },
+        )
+        response.raise_for_status()
+    except Exception as e:
+        raise HTTPException(
+            502,
+            f"Could not download report: {str(e)[:300]}"
+        )
+
+    data = response.content
+
+    if len(data) > MAX_MB * 1048576:
+        raise HTTPException(
+            413,
+            f"Report exceeds {MAX_MB} MB."
+        )
+
+    if not data.startswith(b"%PDF"):
+        raise HTTPException(
+            400,
+            "The selected URL did not return a PDF file."
+        )
+
+    fd, path = tempfile.mkstemp(suffix=".pdf")
+    os.write(fd, data)
+    os.close(fd)
+
+    job_id = uuid.uuid4().hex
+
+    JOBS[job_id] = {
+        "status": "running",
+        "stage": 0,
+        "msg": "Document received from company search",
+        "progress": 0,
+        "result": None,
+        "error": None,
+    }
+
+    threading.Thread(
+        target=pipeline.run,
+        args=(JOBS[job_id], path),
+        daemon=True,
+    ).start()
+
+    return {"job_id": job_id}
 
 @app.get("/api/jobs/{job_id}")
 def job(job_id: str):
