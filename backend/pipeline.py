@@ -53,13 +53,75 @@ def analyse_category(index, cat):
     for _, kw in topics:
         for c in index.retrieve(kw, 3): seen[(c["page"], c["text"][:30])] = c
     ctx = "\n\n".join(f"[PAGE {c['page']}] {c['text']}" for c in list(seen.values())[:16])
-    prompt = f"""You are an ESG disclosure extraction agent. Use ONLY the excerpts below. Never invent data or use outside knowledge.
-For each topic return an object: {{"topic","status":"Disclosed"|"Inferred"|"Not found","value":"exact figure or short disclosure summary","year":"reporting year if stated","page":number,"quote":"VERBATIM sentence copied from the excerpt supporting the value (max 250 chars)"}}.
-"Disclosed"=explicit in text. "Inferred"=only indirectly implied. "Not found"=absent (empty value and quote, page null).
-Return a JSON array, one object per topic, in this order: {'; '.join(t for t, _ in topics)}
+    prompt = f"""
+You are an ESG disclosure extraction agent.
 
-EXCERPTS:
-{ctx}"""
+Use ONLY the document excerpts below.
+Never invent data, metrics, targets, years, or evidence.
+
+For each topic, return exactly one JSON object with these fields:
+
+{{
+    "topic": "topic name",
+    "status": "Disclosed" | "Inferred" | "Not found",
+    "disclosure_status": "Disclosed" | "Not disclosed" | "Unclear",
+    "metric_status": "Available" | "Not available" | "Not applicable" | "Unclear",
+    "metric_type": "quantitative_performance" | "quantitative_target" | "qualitative_statement" | "combined_metric" | "none",
+    "value": "exact figure or short disclosure summary",
+    "year": "reporting year or target year if stated",
+    "page": page number,
+    "quote": "VERBATIM sentence copied from the excerpt supporting the finding"
+}}
+
+IMPORTANT INTERPRETATION RULES:
+
+1. "Disclosed" means the topic is explicitly discussed in the document.
+
+2. "Inferred" means the topic is only indirectly suggested.
+   Do not treat an inference as a direct disclosure.
+
+3. "Not found" means there is no reliable evidence for the topic in the provided excerpts.
+
+4. A topic being disclosed does NOT automatically mean that a quantitative metric is available.
+
+5. If the document discusses a topic but provides no numerical metric:
+   disclosure_status = "Disclosed"
+   metric_status = "Not available"
+   metric_type = "qualitative_statement"
+
+6. If an actual numerical current-period result is provided:
+   metric_status = "Available"
+   metric_type = "quantitative_performance"
+
+7. If a numerical target/future ambition is provided:
+   metric_status = "Available"
+   metric_type = "quantitative_target"
+
+8. If both a current performance figure and a target are mentioned,
+   classify the primary finding according to the actual evidence and do not invent a value.
+
+9. Combined metrics must remain combined.
+   For example, if the document says "Scope 1 & 2 emissions decreased by 82%",
+   DO NOT represent "-82%" as a standalone Scope 1 metric or a standalone Scope 2 metric.
+   Treat it as a combined Scope 1 & 2 metric.
+
+10. Do not convert a combined Scope 1 & 2 disclosure into separate Scope 1 and Scope 2 disclosures.
+
+11. Do not assume that mentioning a topic means the document contains the underlying absolute metric.
+    For example, discussing Scope 1 & 2 emissions does not prove that absolute tCO2e inventory data is disclosed.
+
+12. "value" must contain only information actually supported by the evidence.
+
+13. "quote" must be copied from the supplied excerpts.
+    Do not paraphrase the quote.
+
+        Return a JSON array, one object per topic, in this order:
+        {', '.join([t for t, _ in topics])}
+
+        EXCERPTS:
+        {ctx}
+    """
+
     r = llm_json(prompt)
     return r if isinstance(r, list) else r.get("items", [])
 
@@ -207,6 +269,8 @@ def validate(items, cat, pages):
 
         raw_status = str(it.get("status", "Inferred")).strip().lower()
 
+        raw_status = str(it.get("status", "Inferred")).strip().lower()
+
         if raw_status in {"disclosed", "found", "directly identified", "supported"}:
             status = "Found"
         elif raw_status in {
@@ -216,10 +280,26 @@ def validate(items, cat, pages):
             "verification required",
         }:
             status = "Requires further verification"
-        elif raw_status in {"not found", "missing", "not identified"}:
+        elif raw_status in {
+            "not found",
+            "missing",
+            "not identified",
+        }:
             status = "Not found"
         else:
             status = "Inferred"
+
+        disclosure_status = str(
+            it.get("disclosure_status", "")
+        ).strip()
+
+        metric_status = str(
+            it.get("metric_status", "")
+        ).strip()
+
+        metric_type = str(
+            it.get("metric_type", "none")
+        ).strip()
 
         conf = "High"
         note = ""
@@ -298,8 +378,32 @@ def validate(items, cat, pages):
 
 # ---------- 5. Gap analysis (rule-based) ----------
 def find_gaps(findings):
-    return [{"cat": c, "topic": x["topic"], "why": "Not identified in analysed document" if x["status"] == "Not found" else "Weakly supported; requires further verification"}
-            for c, l in findings.items() for x in l if x["status"] == "Not found" or x["confidence"] == "Low"]
+    gaps = []
+
+    for cat, items in findings.items():
+        for item in items:
+            status = item.get("status")
+            confidence = item.get("confidence")
+
+            if status == "Not found":
+                gaps.append({
+                    "cat": cat,
+                    "topic": item["topic"],
+                    "type": "disclosure_gap",
+                    "severity": "watch",
+                    "why": "Not identified in analysed document",
+                })
+
+            elif confidence == "Low":
+                gaps.append({
+                    "cat": cat,
+                    "topic": item["topic"],
+                    "type": "verification_required",
+                    "severity": "watch",
+                    "why": "Supporting evidence requires further verification",
+                })
+
+    return gaps
 
 # ---------- 6. Report generation agent ----------
 def generate_insights(findings):
