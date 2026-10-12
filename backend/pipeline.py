@@ -324,10 +324,16 @@ def validate(items, cat, pages):
             # the finding as Found rather than leaving the LLM status
             # as Inferred.
             disclosure_is_direct = disclosure_status.strip().lower() == "disclosed"
+            metric_is_direct = metric_type.strip().lower() in {
+                "quantitative_performance",
+                "quantitative_target",
+                "qualitative_statement",
+                "combined_metric",
+            }
 
             if status == "Requires further verification":
                 conf = "Medium"
-            elif disclosure_is_direct:
+            elif disclosure_is_direct or metric_is_direct:
                 status = "Found"
             elif status == "Inferred":
                 conf = "Low"
