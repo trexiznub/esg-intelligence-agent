@@ -1,6 +1,8 @@
 """Tests for the curated company report search. The web search is faked."""
 import pytest
 
+NO_SITE = lambda c: {"pdfs": [], "pages": [], "notes": ["website: stubbed"]}
+
 from backend import company_search as cs
 
 
@@ -66,7 +68,7 @@ def test_search_filters_ranks_and_dedupes():
         calls.append((query, region))
         return pages
 
-    out = cs.search_company_reports("tcs", search=fake)
+    out = cs.search_company_reports("tcs", search=fake, crawl_fn=NO_SITE, use_cache=False)
     assert out["company"] == "Tata Consultancy Services"
     assert [r["source"] for r in out["reports"]] == ["tcs.com", "tcs.com"]
     assert out["reports"][0]["year"] == "2024-25" and out["reports"][0]["pdf"] is True
@@ -78,5 +80,30 @@ def test_search_survives_failing_queries():
     def broken(query, region):
         raise RuntimeError("rate limited")
 
-    out = cs.search_company_reports("Microsoft", search=broken)
+    out = cs.search_company_reports("Microsoft", search=broken, crawl_fn=NO_SITE, use_cache=False)
     assert out["count"] == 0 and out["official_site"] == "https://microsoft.com"
+
+
+def test_website_results_win_when_the_search_engine_is_blocked():
+    def blocked(query, region):
+        raise RuntimeError("202 Ratelimit")
+
+    def site(c):
+        return {"pdfs": [{"url": "https://www.infosys.com/content/dam/esg-report-2024-25.pdf",
+                          "title": "ESG Report 2024-25", "found_on": "https://www.infosys.com/esg"}],
+                "pages": [{"url": "https://www.infosys.com/sustainability.html", "title": "Sustainability | Infosys"}],
+                "notes": ["website: 5 pages read, 1 report PDFs found"]}
+
+    out = cs.search_company_reports("infosys", search=blocked, crawl_fn=site, use_cache=False)
+    assert [r["pdf"] for r in out["reports"]] == [True, False]
+    assert out["reports"][0]["via"] == "website" and out["reports"][0]["year"] == "2024-25"
+    assert any("failed" in n for n in out["checked"])
+
+
+def test_crawler_failure_does_not_hide_search_results():
+    def boom(c):
+        raise TimeoutError
+
+    page = [{"href": "https://www.tcs.com/esg/tcs-esg-report-2023-24.pdf", "title": "TCS ESG Report 2023-24", "body": ""}]
+    out = cs.search_company_reports("tcs", search=lambda q, r: page, crawl_fn=boom, use_cache=False)
+    assert out["count"] == 1 and "website: failed (TimeoutError)" in out["checked"]

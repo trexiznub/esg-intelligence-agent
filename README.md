@@ -4,7 +4,7 @@
 
 **Compares what a company says about ESG with what is reported about it.**
 
-1. **Report discovery.** Pick one of 61 well-known Indian and global companies (`companies.json`) to find its ESG, sustainability, BRSR or annual report. Results are restricted to the company's official website domains, plus NSE/BSE filings that name the company, so other companies' pages never appear.
+1. **Report discovery.** Pick one of 61 well-known Indian and global companies (`companies.json`) to find its ESG, sustainability, BRSR or annual report. The agent reads the company's own website (sitemap, sustainability and investor pages) to collect the report PDFs it links to, and also queries a web search engine; only official sources are kept, so other companies' pages never appear.
 2. **Disclosure analysis.** Upload a sustainability report, annual report or BRSR (PDF). An agentic pipeline extracts ESG metrics, checks every quote against the source PDF and lists disclosure gaps.
 3. **Controversy Watch.** Scans recent news for the company, classifies each headline by ESG pillar and evidence stage, and scores severity with a transparent weighted model.
 4. **Say-do check.** Lines up each news controversy against the related topics in the report and flags where the report has no validated disclosure.
@@ -41,7 +41,8 @@ FastAPI (backend/main.py)
    |     3 Score          severity model, incidents, risk score, signals (pure code)
    |     4 Say-do check   incidents vs the report's validated findings (pure code)
    |
-   +-- company_search.py  curated company list, search limited to official domains
+   +-- company_search.py  curated company list; merges website crawl + search engine
+   +-- site_crawler.py    bounded, robots.txt-aware crawl of a company's official site
    +-- report.py          PDF export (ReportLab)
 ```
 
@@ -76,7 +77,7 @@ pip install -r requirements-dev.txt
 python -m pytest -q
 ```
 
-The 37 tests cover the scoring model, incident grouping, signals, the say-do check, news parsing and the company report search filter. They use no network and no API key.
+The 45 tests cover the scoring model, incident grouping, signals, the say-do check, news parsing and the company report search filter. They use no network and no API key.
 
 ## API
 
@@ -114,7 +115,7 @@ The **say-do check** maps each of the 23 controversy subcategories to report top
 
 ## Known limitations
 
-- Report search depends on a public search engine, so results vary and some reports are web pages rather than PDFs (those must be downloaded and uploaded). To add a company, add an entry with its official domains to `companies.json`.
+- Some company websites block automated visitors or build their pages with JavaScript; then only search-engine results (or none) are shown, and the report must be downloaded and uploaded by hand. Results also vary and some reports are web pages rather than PDFs (those must be downloaded and uploaded). To add a company, add an entry with its official domains to `companies.json`.
 
 - No OCR: scanned PDFs are rejected with a clear message. Tables can extract imperfectly.
 - Retrieval is keyword-based (TF-IDF), not embeddings.

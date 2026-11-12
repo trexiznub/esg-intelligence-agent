@@ -121,18 +121,22 @@ def analyse_url(payload: dict):
     url = str(payload.get("url", "")).strip()
     _assert_public_url(url)
 
+    from backend.site_crawler import BROWSER_HEADERS
+
+    headers = {**BROWSER_HEADERS, "Accept": "application/pdf,*/*;q=0.8"}
     try:
-        response = requests.get(
-            url, timeout=30, stream=True, allow_redirects=False,
-            headers={"User-Agent": "Mozilla/5.0 ESG-Intelligence-Agent"},
-        )
-        if response.is_redirect:  # follow one redirect, re-checking the target
-            target = requests.compat.urljoin(url, response.headers.get("location", ""))
+        target = url
+        for _ in range(4):  # follow up to 3 redirects, re-checking each target
+            response = requests.get(target, timeout=(10, 60), stream=True, allow_redirects=False, headers=headers)
+            if not response.is_redirect:
+                break
+            target = requests.compat.urljoin(target, response.headers.get("location", ""))
             _assert_public_url(target)
-            response = requests.get(
-                target, timeout=30, stream=True, allow_redirects=False,
-                headers={"User-Agent": "Mozilla/5.0 ESG-Intelligence-Agent"},
-            )
+        else:
+            raise HTTPException(502, "The report URL redirected too many times.")
+        if response.status_code in (401, 403):
+            raise HTTPException(502, "The company website blocked the automatic download. Open the report, "
+                                     "save the PDF and upload it instead.")
         response.raise_for_status()
         data = b""
         for chunk in response.iter_content(1 << 16):  # stop reading once over the limit

@@ -270,21 +270,21 @@ function companySearch(){
   const res=searchResults;
   return`<div class="card reveal" style="margin-bottom:18px">
   <div class="k">Report discovery</div><h3 style="font-size:20px;margin-bottom:6px">Find a company's ESG report</h3>
-  <p style="color:var(--ts);margin-bottom:14px">Choose from ${CO.length||60} well-known companies. Results come only from each company's official website (and, for Indian BRSR filings, the stock exchange).</p>
+  <p style="color:var(--ts);margin-bottom:14px">Choose from ${CO.length||60} well-known companies. The agent reads each company's official website for its reports and also searches the web, keeping only results from official sources.</p>
   ${coPick?`<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="tag High">${esc(coPick.name)}</span><span style="color:var(--tm);font-size:13px">${esc(coPick.sector)} · ${esc(coPick.domains[0])}</span><span style="flex:1"></span><button class="btn sm" onclick="clearPick()">Change company</button></div>`
   :`<div style="display:flex;gap:10px;flex-wrap:wrap"><input id="companySearch" class="inp" type="text" placeholder="Type to filter, e.g. Infosys, Unilever, Tata" oninput="filterCompanies()" onkeydown="if(event.key==='Enter')searchCompany()" style="flex:1;min-width:220px">
    <div class="seg">${['All','India','Global'].map(r=>`<button class="${coRegion===r?'on':''}" onclick="setRegion('${r}')">${r}</button>`).join('')}</div></div>
    <div id="coList" class="colist">${CO.length?coListHTML(''):'<p style="color:var(--tm)">Loading company list...</p>'}</div>`}
   ${searchErr?`<div class="err">${esc(searchErr)}</div>`:''}
-  ${searchBusy?`<p style="margin-top:14px;color:var(--tm)">Searching ${esc(coPick?coPick.domains[0]:'')} for ESG, sustainability and annual reports...</p>`:''}
-  ${!searchBusy&&res.length?`<div style="margin-top:18px"><div class="k">Reports found on official sources</div><div style="display:grid;gap:10px">${res.map(r=>`
+  ${searchBusy?`<p style="margin-top:14px;color:var(--tm)">Reading ${esc(coPick?coPick.domains[0]:'')} and searching the web for ESG, sustainability, BRSR and annual reports. This can take up to 30 seconds…</p>`:''}
+  ${!searchBusy&&res.length?`<div style="margin-top:18px"><div class="k">Reports found on official sources</div>${searchMeta&&searchMeta.checked?`<p style="font-size:12px;color:var(--tm);margin:-2px 0 10px">${esc(searchMeta.checked.join(' · '))}</p>`:''}<div style="display:grid;gap:10px">${res.map(r=>`
     <div class="card" style="padding:16px;background:rgba(7,17,13,.55)"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
-    <div style="flex:1;min-width:220px"><h3>${esc(r.title||'Untitled report')}</h3><div style="color:var(--tm);font-size:12.5px">${esc(r.type)} · ${esc(r.year)} · ${esc(r.source)}${r.pdf?' · PDF':''}</div></div>
+    <div style="flex:1;min-width:220px"><h3>${esc(r.title||'Untitled report')}</h3><div style="color:var(--tm);font-size:12.5px">${esc(r.type)} · ${esc(r.year)} · ${esc(r.source)}${r.pdf?' · PDF':' · web page'} · ${r.via==='website'?'found on the official website':'found by web search'}</div></div>
     <div style="display:flex;gap:8px;align-items:center"><a class="btn sm" href="${esc(safeUrl(r.url))}" target="_blank" rel="noopener noreferrer">Open</a>
     ${r.pdf?`<button class="btn sm primary" onclick="analyseReportUrl('${encodeURIComponent(r.url)}')">Analyse</button>`:''}</div></div>
     ${r.summary?`<p style="margin-top:10px;color:var(--ts);font-size:13px">${esc(r.summary)}</p>`:''}</div>`).join('')}</div>
     <p style="font-size:12.5px;color:var(--tm);margin-top:10px">Items without an Analyse button are web pages, not PDFs: open them, download the report and upload it below.</p></div>`:''}
-  ${!searchBusy&&searchMeta&&!res.length?`<p style="margin-top:14px;color:var(--ts)">No report documents were found by the search engine this time. Visit <a class="lnk" href="${esc(searchMeta.official_site)}" target="_blank" rel="noopener noreferrer">${esc(searchMeta.official_site)}</a>, download the report and upload it below.</p>`:''}
+  ${!searchBusy&&searchMeta&&!res.length?`<p style="margin-top:14px;color:var(--ts)">No report documents were found this time (${esc((searchMeta.checked||[]).join(' · '))}). The site may block automated visitors. Visit <a class="lnk" href="${esc(searchMeta.official_site)}" target="_blank" rel="noopener noreferrer">${esc(searchMeta.official_site)}</a>, download the report and upload it below.</p>`:''}
   </div>`}
 
 
