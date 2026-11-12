@@ -4,11 +4,12 @@
 
 **Compares what a company says about ESG with what is reported about it.**
 
-1. **Disclosure analysis.** Upload a sustainability report, annual report or BRSR (PDF). An agentic pipeline extracts ESG metrics, checks every quote against the source PDF and lists disclosure gaps.
-2. **Controversy Watch.** Scans recent news for the company, classifies each headline by ESG pillar and evidence stage, and scores severity with a transparent weighted model.
-3. **Say-do check.** Lines up each news controversy against the related topics in the report and flags where the report has no validated disclosure.
+1. **Report discovery.** Pick one of 61 well-known Indian and global companies (`companies.json`) to find its ESG, sustainability, BRSR or annual report. Results are restricted to the company's official website domains, plus NSE/BSE filings that name the company, so other companies' pages never appear.
+2. **Disclosure analysis.** Upload a sustainability report, annual report or BRSR (PDF). An agentic pipeline extracts ESG metrics, checks every quote against the source PDF and lists disclosure gaps.
+3. **Controversy Watch.** Scans recent news for the company, classifies each headline by ESG pillar and evidence stage, and scores severity with a transparent weighted model.
+4. **Say-do check.** Lines up each news controversy against the related topics in the report and flags where the report has no validated disclosure.
 
-Live demo: https://trexiznub.github.io/esg-intelligence-agent/ (use **View Demo** and **Demo scan**; both run without a backend on clearly labelled synthetic data).
+Live demo: https://trexiznub.github.io/esg-intelligence-agent/ — a short loading screen and a welcome guide explain how to use it. **View Demo** and **Demo scan** run without a backend on clearly labelled synthetic data.
 
 | Controversy Watch | Say-do check |
 |---|---|
@@ -40,7 +41,7 @@ FastAPI (backend/main.py)
    |     3 Score          severity model, incidents, risk score, signals (pure code)
    |     4 Say-do check   incidents vs the report's validated findings (pure code)
    |
-   +-- company_search.py  finds public report PDFs for a company name
+   +-- company_search.py  curated company list, search limited to official domains
    +-- report.py          PDF export (ReportLab)
 ```
 
@@ -75,7 +76,7 @@ pip install -r requirements-dev.txt
 python -m pytest -q
 ```
 
-The 24 tests cover the scoring model, incident grouping, signals, the say-do check and news parsing. They use no network and no API key.
+The 37 tests cover the scoring model, incident grouping, signals, the say-do check, news parsing and the company report search filter. They use no network and no API key.
 
 ## API
 
@@ -85,7 +86,8 @@ The 24 tests cover the scoring model, incident grouping, signals, the say-do che
 | `POST /api/analyse-url` | Analyse a public PDF by URL (private and loopback addresses are refused) |
 | `GET /api/jobs/{id}` | Real pipeline stage and, when done, the result |
 | `GET /api/jobs/{id}/report` | PDF export of the analysis |
-| `POST /api/company-search` | Find public report PDFs for a company |
+| `POST /api/company-search` | Find reports for a company from the supported list (others return 400) |
+| `GET /companies.json` | The supported company list |
 | `POST /api/controversies` | News scan for `{company, days}`; add `job_id` of a finished analysis to get the say-do check |
 
 ## How the scoring works
@@ -111,6 +113,8 @@ The **say-do check** maps each of the 23 controversy subcategories to report top
 - **Not covered**: the report taxonomy has no matching topic.
 
 ## Known limitations
+
+- Report search depends on a public search engine, so results vary and some reports are web pages rather than PDFs (those must be downloaded and uploaded). To add a company, add an entry with its official domains to `companies.json`.
 
 - No OCR: scanned PDFs are rejected with a clear message. Tables can extract imperfectly.
 - Retrieval is keyword-based (TF-IDF), not embeddings.

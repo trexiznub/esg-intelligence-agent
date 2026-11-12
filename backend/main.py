@@ -19,7 +19,7 @@ from fastapi.responses import FileResponse
 from starlette.background import BackgroundTask
 
 from backend import controversy, pipeline
-from backend.company_search import search_company_reports
+from backend.company_search import UnknownCompany, search_company_reports
 from backend.report import generate_report
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -98,6 +98,8 @@ def company_search(payload: dict):
         raise HTTPException(400, "Company name is too long.")
     try:
         return search_company_reports(company)
+    except UnknownCompany as e:
+        raise HTTPException(400, str(e))
     except Exception as e:
         raise HTTPException(502, f"Company search failed: {str(e)[:300]}")
 
@@ -220,6 +222,11 @@ def controversies(payload: dict):
 @app.get("/")
 def index():
     return FileResponse(ROOT / "index.html")
+
+
+@app.get("/companies.json")
+def companies():
+    return FileResponse(ROOT / "companies.json")
 
 
 @app.get("/favicon.svg")

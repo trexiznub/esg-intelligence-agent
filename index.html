@@ -22,7 +22,7 @@ footer{border-top:1px solid var(--bd);color:var(--tm);font-size:12.5px;text-alig
 /* buttons */
 button{font:inherit;color:inherit;cursor:pointer}
 .btn,.tabs button,nav button{position:relative;overflow:hidden;transition:transform .15s var(--ez),background .25s,border-color .25s,box-shadow .25s,color .25s}
-.btn{font:600 14px 'Space Grotesk',sans-serif;padding:11px 22px;border-radius:10px;border:1px solid var(--bds);background:var(--s1);color:var(--tx)}
+.btn{text-decoration:none;display:inline-block;font:600 14px 'Space Grotesk',sans-serif;padding:11px 22px;border-radius:10px;border:1px solid var(--bds);background:var(--s1);color:var(--tx)}
 .btn:hover{background:var(--s2);border-color:var(--gb);transform:translateY(-2px);box-shadow:0 8px 24px rgba(47,191,113,.14)}
 .btn:active,.tabs button:active{transform:scale(.96)}
 .btn.primary{background:var(--g);border-color:var(--g);color:#04120a}.btn.primary:hover{background:var(--gb);border-color:var(--gb)}
@@ -61,6 +61,27 @@ button{font:inherit;color:inherit;cursor:pointer}
 .sev0{background:rgba(110,231,168,.1);color:var(--gb);border-color:rgba(110,231,168,.25)}.sev1{background:rgba(190,210,90,.1);color:#c9d66b;border-color:rgba(190,210,90,.28)}.sev2{background:rgba(224,164,58,.12);color:var(--am);border-color:rgba(224,164,58,.28)}.sev3{background:rgba(232,128,74,.13);color:#f0935c;border-color:rgba(232,128,74,.3)}.sev4{background:rgba(229,103,95,.14);color:var(--rd);border-color:rgba(229,103,95,.32)}
 .inp{padding:12px 14px;border-radius:10px;border:1px solid var(--bds);background:var(--s1);color:var(--tx);font:inherit;outline:none}.inp:focus{border-color:var(--gb)}
 .fgrid{display:grid;grid-template-columns:auto 1fr auto;gap:6px 12px;align-items:center;font-size:12.5px;color:var(--ts);margin:10px 0}.fgrid i{color:var(--tm);font-style:normal}
+.colist{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-top:14px;max-height:300px;overflow:auto;padding-right:4px}
+.co{text-align:left;background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;transition:.2s}.co:hover,.co.on{border-color:var(--gb);background:var(--s2)}.co b{display:block;font-size:14px}.co span{font-size:12px;color:var(--tm)}
+.seg{display:flex;border:1px solid var(--bds);border-radius:10px;overflow:hidden}.seg button{background:var(--s1);border:0;padding:0 16px;color:var(--ts);font-size:13.5px}.seg button.on{background:var(--g);color:#04120a;font-weight:600}
+/* splash + welcome */
+#splash{position:fixed;inset:0;z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:radial-gradient(circle at 50% 40%,rgba(47,191,113,.14),transparent 45%),var(--bg);transition:opacity .6s var(--ez),visibility .6s}
+#splash.out{opacity:0;visibility:hidden}
+#splash svg{width:76px;height:76px;filter:drop-shadow(0 0 22px rgba(57,255,136,.35))}
+#splash .lf1{transform-origin:32px 38px;animation:leaf 1.4s var(--ez) both}#splash .lf2{transform-origin:32px 44px;animation:leaf 1.4s .25s var(--ez) both}#splash .stem{stroke-dasharray:24;stroke-dashoffset:24;animation:stem .7s var(--ez) forwards}
+#splash .nm{font:700 24px 'Space Grotesk',sans-serif;letter-spacing:-.02em;animation:rise .7s .3s var(--ez) both}#splash .nm b{color:var(--g)}
+#splash .ld{width:220px;height:4px;border-radius:9px;background:rgba(255,255,255,.08);overflow:hidden}#splash .ld div{height:100%;width:0;border-radius:9px;background:linear-gradient(90deg,var(--gd),var(--g),var(--gb));animation:load 1.5s var(--ez) forwards}
+#splash .sm{color:var(--tm);font-size:13px;min-height:20px;animation:fade .4s .4s both}
+@keyframes leaf{from{opacity:0;transform:scale(.2) rotate(-25deg)}to{opacity:1;transform:none}}
+@keyframes stem{to{stroke-dashoffset:0}}@keyframes load{to{width:100%}}
+.welcome{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(3,10,7,.8);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);animation:fade .35s both}
+.welcome .card{max-width:720px;width:100%;max-height:90vh;overflow:auto;padding:30px;animation:pop .45s var(--ez) both}.welcome .card:hover{transform:none}
+.welcome h2{font-size:clamp(26px,4vw,36px);margin:4px 0 8px}.welcome h2 span{background:linear-gradient(90deg,var(--g),var(--gb));-webkit-background-clip:text;background-clip:text;color:transparent}
+.steps{display:grid;gap:12px;margin:22px 0}.step{display:flex;gap:14px;align-items:flex-start;padding:14px;border:1px solid var(--bd);border-radius:12px;background:rgba(7,17,13,.5);opacity:0;animation:rise .5s var(--ez) forwards;animation-delay:calc(.15s + var(--i)*90ms)}
+.step .n{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:rgba(47,191,113,.15);color:var(--gb);font:700 14px 'Space Grotesk',sans-serif;border:1px solid var(--bds)}
+.step h3{font-size:15px;margin:2px 0 3px}.step p{font-size:13.5px}
+.wfoot{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.wfoot label{color:var(--tm);font-size:13px;display:flex;gap:6px;align-items:center;margin-left:auto;cursor:pointer}
+@media(prefers-reduced-motion:reduce){.step{opacity:1}#splash .ld div{width:100%}}
 /* tabs & table */
 .tabs{display:flex;gap:4px;border-bottom:1px solid var(--bd);margin:26px 0 16px;flex-wrap:wrap;align-items:center}
 .tabs button{background:none;border:0;border-radius:8px 8px 0 0;padding:10px 16px;color:var(--tm);font-size:14px;font-weight:600;position:relative}
@@ -118,6 +139,9 @@ blockquote{margin:8px 0 16px;padding:12px 16px;border-left:3px solid var(--g);ba
     margin: 0;
 }
 </style></head><body>
+<div id="splash" role="status" aria-label="Loading ESG Intelligence"><svg viewBox="0 0 64 64" aria-hidden="true"><path class="stem" d="M32 50V27" stroke="#39ff88" stroke-width="4" stroke-linecap="round" fill="none"/><path class="lf1" d="M32 38C22 38 16 32 16 21C27 21 34 27 32 38Z" fill="#39ff88"/><path class="lf2" d="M32 44C42 44 48 38 48 27C37 27 30 33 32 44Z" fill="#20c96b"/></svg>
+<div class="nm">ESG <b>Intelligence</b></div><div class="ld"><div></div></div><div class="sm" id="splashMsg">Loading the ESG taxonomy…</div></div>
+<div id="welcome"></div>
 <header><div class="logo">ESG <b>Intelligence</b></div><nav id="nav"></nav></header>
 <main id="app"></main>
 <footer>ESG Intelligence is an AI-assisted research prototype. It does not provide an ESG rating, assurance opinion, investment recommendation or compliance determination.</footer>
@@ -150,42 +174,29 @@ ins:{highlights:['Based on the analysed disclosure, Scope 1 and 2 emissions are 
 let S={view:'home',tab:'Environmental',res:null,stages:[],msg:'',prog:0,err:'',file:null,busy:false,sd:{busy:false,err:'',res:null}};
 let searchResults=[];
 let searchBusy=false;
-
+/* Curated company list: only these companies can be searched (companies.json). */
+let CO=[],coRegion='All',coPick=null,searchMeta=null,searchErr='';
+fetch('companies.json').then(r=>r.json()).then(d=>{CO=d;if(S.view==='analysis'&&!S.res)render()}).catch(()=>{});
+const coKey=s=>String(s||'').toLowerCase().replace(/[^a-z0-9&]+/g,' ').trim();
+function coMatches(q){q=coKey(q);return CO.filter(c=>(coRegion==='All'||c.region===coRegion)&&(!q||[c.name,c.id,c.sector,...c.aliases].some(n=>coKey(n).includes(q))))}
+function coListHTML(q){const l=coMatches(q);
+  return l.length?l.map(c=>`<button class="co ${coPick&&coPick.id===c.id?'on':''}" onclick="pickCompany('${c.id}')"><b>${esc(c.name)}</b><span>${esc(c.sector)} · ${esc(c.region)}</span></button>`).join(''):'<p style="color:var(--tm);margin:6px 0">No supported company matches. Pick one from the list.</p>'}
+function filterCompanies(){const el=$('#coList');el&&(el.innerHTML=coListHTML($('#companySearch').value))}
+function setRegion(r){coRegion=r;render()}
+function pickCompany(id){coPick=CO.find(c=>c.id===id)||null;searchResults=[];searchMeta=null;searchErr='';searchCompany()}
 async function searchCompany(){
-  const input=$('#companySearch');
-  const company=(input?.value||'').trim();
-
-  if(!company){
-    alert('Enter a company name.');
-    return;
-  }
-
-  searchBusy=true;
-  searchResults=[];
-  S.err='';
-  render();
-
+  if(!coPick){const q=coKey($('#companySearch')?.value),m=coMatches(q);
+    coPick=m.find(c=>[c.name,c.id,...c.aliases].some(n=>coKey(n)===q))||(m.length===1?m[0]:null)}
+  if(!coPick){searchErr='Pick a company from the list below.';render();return}
+  searchBusy=true;searchResults=[];searchMeta=null;searchErr='';render();
   try{
-    const response=await fetch(API+'/api/company-search',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({company})
-    });
-
-    const data=await response.json();
-
-    if(!response.ok){
-      throw new Error(data.detail||'Company search failed.');
-    }
-
-    searchResults=data.reports||[];
-  }catch(e){
-    S.err=e.message||'Company search failed.';
-  }finally{
-    searchBusy=false;
-    render();
-  }
-}
+    const response=await fetch(API+'/api/company-search',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({company:coPick.id})});
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(data.detail||'Company search failed.');
+    searchResults=data.reports||[];searchMeta=data;
+  }catch(e){searchErr=e.message==='Failed to fetch'?'Cannot reach the backend right now (it may be waking up — try again in a minute). You can still upload a PDF below.':(e.message||'Company search failed.')}
+  finally{searchBusy=false;render()}}
+function clearPick(){coPick=null;searchResults=[];searchMeta=null;searchErr='';render()}
 
 async function analyseReportUrl(encodedUrl){
   const url=decodeURIComponent(encodedUrl);
@@ -256,81 +267,25 @@ async function analyseReportUrl(encodedUrl){
 }
 
 function companySearch(){
-  return `
-    <div class="card reveal" style="margin-bottom:18px">
-      <div class="k">Report discovery</div>
-      <h3 style="font-size:20px;margin-bottom:6px">Search a Company</h3>
-      <p style="color:var(--ts);margin-bottom:14px">
-        Find publicly available sustainability, ESG, BRSR and annual reports.
-      </p>
-
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <input
-          id="companySearch"
-          type="text"
-          placeholder="e.g. Schneider Electric"
-          onkeydown="if(event.key==='Enter')searchCompany()"
-          style="flex:1;min-width:220px;padding:12px 14px;border-radius:10px;border:1px solid var(--bds);background:var(--s1);color:var(--tx);font:inherit;outline:none"
-        >
-        <button class="btn primary" onclick="searchCompany()" ${searchBusy?'disabled':''}>
-          ${searchBusy?'Searching...':'Search'}
-        </button>
-      </div>
-
-      ${
-        searchBusy
-        ? `<p style="margin-top:14px;color:var(--tm)">Searching for relevant company reports...</p>`
-        : ''
-      }
-
-      ${
-        !searchBusy && searchResults.length
-        ? `
-          <div style="margin-top:18px">
-            <div class="k">Reports found</div>
-            <div style="display:grid;gap:10px">
-              ${searchResults.map(r=>`
-                <div class="card" style="padding:16px;background:rgba(7,17,13,.55)">
-                  <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
-                    <div>
-                      <h3>${esc(r.title||'Untitled report')}</h3>
-                      <div style="color:var(--tm);font-size:12px;margin-bottom:5px">
-                        ${esc(r.type||'Company report')} · ${esc(r.year||'See publication')}
-                      </div>
-                      <div style="color:var(--tm);font-size:12px">
-                        ${esc(r.source||'Source')}
-                      </div>
-                    </div>
-
-                    <div style="display:flex;gap:8px;align-items:center">
-                      <a class="btn sm" href="${esc(r.url)}" target="_blank" rel="noopener">Open</a>
-                      <button class="btn sm primary" onclick="analyseReportUrl('${encodeURIComponent(r.url)}')">
-                        Analyse
-                      </button>
-                    </div>
-                  </div>
-
-                  ${
-                    r.summary
-                    ? `<p style="margin-top:10px;color:var(--ts);font-size:13px">${esc(r.summary)}</p>`
-                    : ''
-                  }
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        `
-        : ''
-      }
-
-      ${
-        !searchBusy && searchResults.length===0
-        ? `<p style="margin-top:14px;color:var(--tm)">Enter a company name to find reports.</p>`
-        : ''
-      }
-    </div>
-  `;
-}
+  const res=searchResults;
+  return`<div class="card reveal" style="margin-bottom:18px">
+  <div class="k">Report discovery</div><h3 style="font-size:20px;margin-bottom:6px">Find a company's ESG report</h3>
+  <p style="color:var(--ts);margin-bottom:14px">Choose from ${CO.length||60} well-known companies. Results come only from each company's official website (and, for Indian BRSR filings, the stock exchange).</p>
+  ${coPick?`<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="tag High">${esc(coPick.name)}</span><span style="color:var(--tm);font-size:13px">${esc(coPick.sector)} · ${esc(coPick.domains[0])}</span><span style="flex:1"></span><button class="btn sm" onclick="clearPick()">Change company</button></div>`
+  :`<div style="display:flex;gap:10px;flex-wrap:wrap"><input id="companySearch" class="inp" type="text" placeholder="Type to filter, e.g. Infosys, Unilever, Tata" oninput="filterCompanies()" onkeydown="if(event.key==='Enter')searchCompany()" style="flex:1;min-width:220px">
+   <div class="seg">${['All','India','Global'].map(r=>`<button class="${coRegion===r?'on':''}" onclick="setRegion('${r}')">${r}</button>`).join('')}</div></div>
+   <div id="coList" class="colist">${CO.length?coListHTML(''):'<p style="color:var(--tm)">Loading company list...</p>'}</div>`}
+  ${searchErr?`<div class="err">${esc(searchErr)}</div>`:''}
+  ${searchBusy?`<p style="margin-top:14px;color:var(--tm)">Searching ${esc(coPick?coPick.domains[0]:'')} for ESG, sustainability and annual reports...</p>`:''}
+  ${!searchBusy&&res.length?`<div style="margin-top:18px"><div class="k">Reports found on official sources</div><div style="display:grid;gap:10px">${res.map(r=>`
+    <div class="card" style="padding:16px;background:rgba(7,17,13,.55)"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
+    <div style="flex:1;min-width:220px"><h3>${esc(r.title||'Untitled report')}</h3><div style="color:var(--tm);font-size:12.5px">${esc(r.type)} · ${esc(r.year)} · ${esc(r.source)}${r.pdf?' · PDF':''}</div></div>
+    <div style="display:flex;gap:8px;align-items:center"><a class="btn sm" href="${esc(safeUrl(r.url))}" target="_blank" rel="noopener noreferrer">Open</a>
+    ${r.pdf?`<button class="btn sm primary" onclick="analyseReportUrl('${encodeURIComponent(r.url)}')">Analyse</button>`:''}</div></div>
+    ${r.summary?`<p style="margin-top:10px;color:var(--ts);font-size:13px">${esc(r.summary)}</p>`:''}</div>`).join('')}</div>
+    <p style="font-size:12.5px;color:var(--tm);margin-top:10px">Items without an Analyse button are web pages, not PDFs: open them, download the report and upload it below.</p></div>`:''}
+  ${!searchBusy&&searchMeta&&!res.length?`<p style="margin-top:14px;color:var(--ts)">No report documents were found by the search engine this time. Visit <a class="lnk" href="${esc(searchMeta.official_site)}" target="_blank" rel="noopener noreferrer">${esc(searchMeta.official_site)}</a>, download the report and upload it below.</p>`:''}
+  </div>`}
 
 
 const STAGES=['Document','Extraction','Retrieval','ESG Analysis','Validation','Gap Analysis','Final Insights'];
@@ -425,10 +380,10 @@ const ICON=['<path d="M4 5h16M4 12h16M4 19h10"/>','<circle cx="11" cy="11" r="6"
 function viewSource(cat,topic){const x=S.res.f[cat].find(i=>i.topic===topic);const ctx=x.context||'';
   $('#modal').innerHTML=`<div class="modal" onclick="if(event.target===this)closeModal()"><div class="card"><div class="k">${esc(cat)} · ${S.res.demo?'MOCK excerpt':'Source'}</div><h3>${esc(topic)} — page ${esc(x.page)}</h3><p class="k" style="margin-top:14px">Extracted quote</p><blockquote>${esc(x.quote)}</blockquote>${ctx?`<p class="k">Surrounding page text</p><blockquote>…${esc(ctx)}…</blockquote>`:''}${x.note?`<p class="err">${esc(x.note)}</p>`:''}<button class="btn sm" onclick="closeModal()">Close</button></div></div>`}
 function closeModal(){$('#modal').innerHTML=''}
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();$('#welcome').innerHTML&&closeWelcome()}});
 const tagCls=x=>String(x).split(' ')[0].replace(/[^a-zA-Z0-9_-]/g,'');
 function ind(l){const n=l.filter(x=>x.status==='Found'&&x.confidence!=='Low').length,r=n/l.length;return n===0?'Not found':r>=.7?'Strong disclosure':r>=.4?'Moderate disclosure':'Limited disclosure'}
-function home(){return`<section class="hero"><span class="eyebrow reveal">AI-assisted ESG disclosure analysis</span><h1 class="reveal">Turn ESG Disclosures into <span>Actionable Intelligence.</span></h1><p class="reveal">Upload a sustainability or annual report and use AI to extract ESG metrics, identify disclosure gaps, and generate structured sustainability insights.</p><div class="cta reveal"><button class="btn primary" onclick="go('analysis')">Start Analysis</button><button class="btn s" onclick="loadDemo()">View Demo</button></div><div class="trust reveal"><span>Source-traceable</span><span>Validation-first</span><span>No black-box scores</span></div></section>
+function home(){return`<section class="hero"><span class="eyebrow reveal">AI-assisted ESG disclosure analysis</span><h1 class="reveal">Turn ESG Disclosures into <span>Actionable Intelligence.</span></h1><p class="reveal">Upload a sustainability or annual report and use AI to extract ESG metrics, identify disclosure gaps, and generate structured sustainability insights.</p><div class="cta reveal"><button class="btn primary" onclick="go('analysis')">Start Analysis</button><button class="btn s" onclick="loadDemo()">View Demo</button><button class="btn s" onclick="showWelcome()">How it works</button></div><div class="trust reveal"><span>Source-traceable</span><span>Validation-first</span><span>No black-box scores</span></div></section>
 <div class="grid">${[['ESG Metric Extraction','Extract disclosed environmental, social and governance metrics.'],['Disclosure Gap Analysis','Identify areas where information appears missing, unclear, or insufficiently disclosed.'],['AI-Powered Insights','Generate structured sustainability insights from the uploaded document.'],['Controversy Watch','Monitor ESG news, score severity by evidence stage, and check coverage against what the report says.']].map((c,i)=>`<div class="card feat reveal">${ICON[i]}<h3>${c[0]}</h3><p>${c[1]}</p></div>`).join('')}</div>
 <h2 class="reveal">How it works</h2><div class="flow reveal">${['Input','Document Retrieval','AI Reasoning','Validation','ESG Insights'].map(n=>`<span class="n">${n}</span>`).join('<span class="ar">→</span>')}</div>
 <div class="card reveal"><h3>Why agentic AI?</h3><p>The workflow separates document retrieval, ESG extraction, validation and gap analysis into distinct reasoning stages, allowing the system to verify information before presenting insights.</p></div>`}
@@ -544,8 +499,8 @@ function watch(){
   return`<h2 class="reveal" style="margin-top:0">Controversy Watch</h2>
   <div class="card reveal" style="margin-bottom:18px"><div class="k">News monitoring</div><h3 style="font-size:20px;margin-bottom:6px">Scan a company for ESG controversies</h3>
   <p style="color:var(--ts);margin-bottom:14px">Collects recent headlines, classifies them by pillar and evidence stage, and scores severity with a transparent weighted model.</p>
-  <div style="display:flex;gap:10px;flex-wrap:wrap"><input id="watchQ" type="text" value="${esc(W.q)}" placeholder="e.g. Vedanta" onkeydown="if(event.key==='Enter')runWatch()" class="inp" style="flex:1;min-width:220px">
-  <select id="watchDays" class="inp">${[30,90,180].map(d=>`<option value="${d}" ${W.days===d?'selected':''}>Last ${d} days</option>`).join('')}</select>
+  <div style="display:flex;gap:10px;flex-wrap:wrap"><input id="watchQ" type="text" value="${esc(W.q)}" list="coNames" placeholder="e.g. Vedanta" onkeydown="if(event.key==='Enter')runWatch()" class="inp" style="flex:1;min-width:220px">
+  <datalist id="coNames">${CO.map(c=>`<option value="${esc(c.name)}">`).join('')}</datalist><select id="watchDays" class="inp">${[30,90,180].map(d=>`<option value="${d}" ${W.days===d?'selected':''}>Last ${d} days</option>`).join('')}</select>
   <button class="btn primary" onclick="runWatch()" ${W.busy?'disabled':''}>${W.busy?'Scanning...':'Scan news'}</button><button class="btn s" onclick="demoWatch()">Demo scan</button></div>
   ${W.busy?'<p style="margin-top:14px;color:var(--tm)">Collecting and classifying headlines. This can take up to a minute.</p>':''}</div>
   ${W.err?`<div class="err">${esc(W.err)}</div>`:''}${W.res?watchRes(W.res,'W'):''}`}
@@ -573,7 +528,7 @@ function sayDoV(r){const sd=S.sd,ok=r.meta.company&&r.meta.company!=='Not identi
 function countUp(){document.querySelectorAll('[data-count]').forEach(el=>{const to=+el.dataset.count,suf=el.dataset.suffix||'',t0=performance.now();
   (function f(t){const p=Math.min(1,(t-t0)/900),e=1-Math.pow(1-p,3);el.textContent=Math.round(to*e)+suf;p<1&&requestAnimationFrame(f)})(t0)})}
 function render(mode){const v=S.view,app=$('#app');
-  $('#nav').innerHTML=[['Dashboard','home'],['Analysis','analysis'],['Controversy Watch','watch'],['Methodology','method'],['About','about']].map(([l,k])=>`<button class="${v===k?'on':''}" onclick="go('${k}')">${l}</button>`).join('');
+  $('#nav').innerHTML=[['Dashboard','home'],['Analysis','analysis'],['Controversy Watch','watch'],['Methodology','method'],['About','about']].map(([l,k])=>`<button class="${v===k?'on':''}" onclick="go('${k}')">${l}</button>`).join('')+'<button onclick="showWelcome()">Guide</button>';
   app.className=mode==='page'?'a-page':mode==='tab'?'a-tab':'';
   app.innerHTML={home,analysis,watch,method,about}[v]();
   if(mode){app.querySelectorAll('.reveal,tbody tr').forEach((el,i)=>el.style.setProperty('--i',i));mode==='page'&&countUp()}
@@ -584,6 +539,29 @@ function bindDrop(){const d=$('#drop'),fi=$('#fi');if(!d)return;
 /* click ripple on buttons */
 document.addEventListener('click',e=>{const b=e.target.closest('.btn,.tabs button,nav button');if(!b)return;const r=b.getBoundingClientRect(),s=Math.max(r.width,r.height)/2,d=document.createElement('span');
   d.className='ripple';d.style.cssText=`width:${s}px;height:${s}px;left:${e.clientX-r.left-s/2}px;top:${e.clientY-r.top-s/2}px`;b.appendChild(d);setTimeout(()=>d.remove(),650)});
+/* ---------- Loading screen + welcome guide ---------- */
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+function greeting(){const h=new Date().getHours();return h<12?'Good morning':h<17?'Good afternoon':'Good evening'}
+function showWelcome(){
+  const steps=[['Find or upload a report','Go to <b>Analysis</b>. Pick a well-known company to find its official ESG, sustainability, BRSR or annual report, or drag in any report PDF.'],
+    ['Watch the agent work','The pipeline extracts the text, retrieves passages for each ESG topic, asks the AI for metrics with exact quotes, and then checks every quote against the PDF.'],
+    ['Review metrics, insights and gaps','Browse the Environmental, Social and Governance tabs. Click <b>View source</b> to see the page a figure came from, and use <b>Gaps</b> to see what the report leaves out.'],
+    ['Check the news','Open the <b>Say–Do check</b> tab, or <b>Controversy Watch</b> in the menu, to compare what the company says with what the news reports about it.']];
+  $('#welcome').innerHTML=`<div class="welcome" role="dialog" aria-modal="true" aria-labelledby="wTitle"><div class="card">
+  <span class="eyebrow">${greeting()}</span><h2 id="wTitle">Welcome to <span>ESG Intelligence</span></h2>
+  <p style="color:var(--ts);font-size:15.5px">An AI agent that reads company sustainability reports, checks its own work against the source, and compares the report with news coverage. Here's how to use it:</p>
+  <div class="steps">${steps.map((x,i)=>`<div class="step" style="--i:${i}"><div class="n">${i+1}</div><div><h3>${x[0]}</h3><p>${x[1]}</p></div></div>`).join('')}</div>
+  <p style="font-size:12.5px;color:var(--tm);margin-bottom:18px">No account needed. The first live request can take up to a minute while the server wakes up. The demo works instantly.</p>
+  <div class="wfoot"><button class="btn primary" onclick="closeWelcome('analysis')">Start analysing</button><button class="btn" onclick="closeWelcome('demo')">Try the demo</button><button class="btn s" onclick="closeWelcome()">Explore on my own</button>
+  <label><input type="checkbox" id="wHide" ${store.get('esg-welcome-hide')?'checked':''}> Don't show again</label></div></div></div>`;
+  setTimeout(()=>{const b=document.querySelector('.welcome .btn.primary');b&&b.focus()},50)}
+function closeWelcome(next){const c=$('#wHide');
+  if(c){if(c.checked)store.set('esg-welcome-hide','1');else try{localStorage.removeItem('esg-welcome-hide')}catch(e){}}
+  $('#welcome').innerHTML='';if(next==='analysis')go('analysis');else if(next==='demo')loadDemo()}
+(function boot(){const msgs=['Loading the ESG taxonomy…','Preparing the validation agent…','Connecting to the news monitor…','Ready.'];let i=0;
+  const t=setInterval(()=>{const m=$('#splashMsg');if(m&&i<msgs.length-1)m.textContent=msgs[++i]},420);
+  fetch(API+'/api/health').catch(()=>{}); /* wakes the backend early so the first real request is faster */
+  setTimeout(()=>{clearInterval(t);$('#splash').classList.add('out');setTimeout(()=>$('#splash').remove(),700);if(!store.get('esg-welcome-hide'))showWelcome()},1700)})();
 render('page');
 </script>
 <footer class="site-footer">
