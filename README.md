@@ -1,58 +1,129 @@
 # ESG Intelligence Agent
 
-An AI-assisted ESG disclosure analyser. Upload a sustainability report, annual report or BRSR (PDF) and get a source-traceable dashboard of ESG metrics, disclosure gaps and cautious insights. It is a research prototype, **not** an ESG rating, assurance opinion, investment recommendation or compliance determination.
+[![Tests](https://github.com/trexiznub/esg-intelligence-agent/actions/workflows/tests.yml/badge.svg)](https://github.com/trexiznub/esg-intelligence-agent/actions/workflows/tests.yml)
+
+**Compares what a company says about ESG with what is reported about it.**
+
+1. **Disclosure analysis.** Upload a sustainability report, annual report or BRSR (PDF). An agentic pipeline extracts ESG metrics, checks every quote against the source PDF and lists disclosure gaps.
+2. **Controversy Watch.** Scans recent news for the company, classifies each headline by ESG pillar and evidence stage, and scores severity with a transparent weighted model.
+3. **Say-do check.** Lines up each news controversy against the related topics in the report and flags where the report has no validated disclosure.
+
+Live demo: https://trexiznub.github.io/esg-intelligence-agent/ (use **View Demo** and **Demo scan**; both run without a backend on clearly labelled synthetic data).
+
+| Controversy Watch | Say-do check |
+|---|---|
+| ![Controversy Watch](docs/controversy-watch.png) | ![Say-do check](docs/say-do-check.png) |
+
+*Screenshots show the built-in demo: synthetic headlines about a fictional company.*
+
+This is a research prototype. It is **not** an ESG rating, assurance opinion, investment recommendation or compliance determination, and a news allegation is not a finding of fault.
 
 ## Architecture
+
 ```
-Browser (frontend/index.html)  --upload-->  FastAPI (backend/main.py)
-        ^                                        |  background thread
-        |  polls /api/jobs/{id}                  v
-        +------ real stage status ----- pipeline.py
-                                         1 Ingestion  (PyMuPDF, page numbers kept, chunking)
-                                         2 Retrieval  (TF-IDF vector search per ESG topic)
-                                         3 ESG analysis (LLM, retrieved excerpts only)
-                                         4 Validation (deterministic: quote must exist in the PDF)
-                                         5 Gap analysis (rule-based)
-                                         6 Report/insights (LLM, validated findings only)
+Browser (index.html, no build step)
+   |  upload PDF / company name                 polls /api/jobs/{id}
+   v
+FastAPI (backend/main.py)
+   |
+   +-- pipeline.py        report analysis, runs in a background thread
+   |     1 Ingestion      PyMuPDF, page numbers kept, chunking
+   |     2 Retrieval      TF-IDF search per ESG topic (taxonomy.py)
+   |     3 ESG analysis   LLM, retrieved excerpts only
+   |     4 Validation     deterministic: the quote must exist in the PDF
+   |     5 Gap analysis   rule-based
+   |     6 Insights       LLM, validated findings only
+   |
+   +-- controversy.py     Controversy Watch
+   |     1 Collect        GDELT + Google News RSS (free, no key), de-duplicated
+   |     2 Classify       one batched LLM call; labelled keyword rules as fallback
+   |     3 Score          severity model, incidents, risk score, signals (pure code)
+   |     4 Say-do check   incidents vs the report's validated findings (pure code)
+   |
+   +-- company_search.py  finds public report PDFs for a company name
+   +-- report.py          PDF export (ReportLab)
 ```
-The agents are logical stages sharing one LLM. The UI stage tracker reads the backend's actual stage, nothing is simulated.
 
 ## Tech stack
-Python, FastAPI, PyMuPDF, Anthropic API, vanilla JS/CSS frontend (no build step).
+
+Python, FastAPI, PyMuPDF, Google Gemini API, ReportLab, vanilla JS/CSS frontend, pytest, GitHub Actions.
 
 ## Setup
-```bash
-cd backend
-python -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-cp .env.example .env             # Windows: copy .env.example .env
-# edit .env and add your ANTHROPIC_API_KEY
-uvicorn main:app --port 8000
-```
-Open http://localhost:8000. The **View Demo** button works without an API key and uses clearly labelled mock data.
 
-## Environment variables
+Run everything from the repository root.
+
+```bash
+python -m venv .venv
+source .venv/bin/activate              # Windows: .venv\Scripts\activate
+pip install -r backend/requirements.txt
+cp backend/.env.example backend/.env   # Windows: copy backend\.env.example backend\.env
+# edit backend/.env and add your GEMINI_API_KEY
+uvicorn backend.main:app --port 8000
+```
+
+Open http://localhost:8000.
+
 | Variable | Purpose |
 |---|---|
-| `ANTHROPIC_API_KEY` | Required for real analysis. Server-side only, never sent to the browser. |
-| `ANTHROPIC_MODEL` | Optional model override (default `claude-sonnet-4-6`). |
+| `GEMINI_API_KEY` | Needed for report analysis and for LLM news classification. Server-side only, never sent to the browser. Without it, Controversy Watch still runs on keyword rules. |
+| `GEMINI_MODEL` | Optional model override. |
 
-## How the agentic workflow works
-1. **Ingestion** extracts text per page and chunks it (1200 chars, 200 overlap) keeping page numbers.
-2. **Retrieval** scores chunks against keywords for each topic (e.g. Scope 1) and passes only the top excerpts to the model.
-3. **Analysis** asks the model for value, year, page and a *verbatim quote* per topic, or "Not found".
-4. **Validation** checks in plain code that the quote appears in the PDF (correcting the page if needed) and that numbers in the value appear in the quote. Failures become *Inferred* with low confidence.
-5. **Gap analysis** lists topics that are Not found or low confidence.
-6. **Insights** are written only from validated findings using cautious wording.
+## Tests
+
+```bash
+pip install -r requirements-dev.txt
+python -m pytest -q
+```
+
+The 24 tests cover the scoring model, incident grouping, signals, the say-do check and news parsing. They use no network and no API key.
+
+## API
+
+| Endpoint | Purpose |
+|---|---|
+| `POST /api/analyse` | Upload a PDF, returns a `job_id` |
+| `POST /api/analyse-url` | Analyse a public PDF by URL (private and loopback addresses are refused) |
+| `GET /api/jobs/{id}` | Real pipeline stage and, when done, the result |
+| `GET /api/jobs/{id}/report` | PDF export of the analysis |
+| `POST /api/company-search` | Find public report PDFs for a company |
+| `POST /api/controversies` | News scan for `{company, days}`; add `job_id` of a finished analysis to get the say-do check |
+
+## How the scoring works
+
+**Severity (0-100)** of one article is a weighted sum of seven factors multiplied by an evidence-stage factor, so an allegation scores lower than a confirmed violation with the same facts.
+
+| Factor | Weight | | Evidence stage | Multiplier |
+|---|---|---|---|---|
+| Magnitude | 22% | | Allegation | 0.80 |
+| Regulatory implications | 18% | | Under investigation | 0.92 |
+| Scale of impact | 16% | | Confirmed violation | 1.00 |
+| Reputational exposure | 16% | | Resolved | 0.55 |
+| Financial implications | 14% | | | |
+| Recurrence | 9% | | | |
+| Source credibility | 5% | | | |
+
+Articles on the same subcategory within 30 days form one **incident**; its latest article sets its current stage. The **news risk score** sums incident severities, halving each one every 45 days, and passes the total through a saturating curve so it cannot exceed 100.
+
+The **say-do check** maps each of the 23 controversy subcategories to report topics (for example *Employee safety* to *Health & safety* and *Workplace incidents*) and returns one of:
+
+- **Disclosure gap**: the news raises the issue and the report has no validated disclosure on the related topics.
+- **Compare claims**: the report does disclose them, with page references to read against the coverage.
+- **Not covered**: the report taxonomy has no matching topic.
 
 ## Known limitations
-- No OCR: scanned PDFs are rejected with a clear message.
-- Tables may extract imperfectly; figures inside tables can be missed.
-- Retrieval is keyword-based (TF-IDF), not embeddings; very differently worded disclosures can be missed.
-- Validation proves a quote exists, not that the model interpreted it correctly. Always verify against the source.
-- Jobs are held in memory and lost on restart; single-user prototype with no authentication.
-- 25 MB upload limit.
 
-## Example interview explanation
-"I built an agentic pipeline instead of a chatbot. Retrieval narrows a long report to relevant passages, the model extracts metrics with verbatim quotes, and a separate non-AI validation step checks each quote against the PDF before anything is shown. Unsupported claims are downgraded, missing topics are reported as gaps rather than guessed, and every figure links to its page, so an analyst can audit the output. I deliberately avoided a made-up ESG score and I state the limits, such as no OCR and keyword retrieval, openly."
+- No OCR: scanned PDFs are rejected with a clear message. Tables can extract imperfectly.
+- Retrieval is keyword-based (TF-IDF), not embeddings.
+- Validation proves a quote exists in the PDF, not that the model interpreted it correctly.
+- Controversy Watch reads headlines only, not article bodies, so confidence is modest. Dates are when the source first listed the article.
+- Severity weights were tuned on synthetic data and have not been calibrated against real outcomes.
+- Company matching is by name, so a common word used as a company name can pull in unrelated headlines.
+- Jobs and news scans are held in memory and lost on restart. There is no sign-in and no rate limiting.
+
+## How I explain it in an interview
+
+"Most ESG tools either read the company's own report or track the news. I built both and connected them. The report side is an agentic pipeline: retrieval narrows a long PDF to relevant passages, the model extracts metrics with verbatim quotes, and a non-AI validation step checks each quote against the PDF before anything is shown. The news side classifies headlines by pillar and evidence stage, and a transparent weighted model scores severity so an allegation never counts the same as a confirmed violation. The say-do check then joins the two: if the news reports a data breach and the report says nothing about data privacy, that is flagged as a disclosure gap. The scoring is plain code with unit tests, and I state the limits openly, such as headline-only classification and uncalibrated weights."
+
+---
+
+© 2026 Ujwal Raj K.P.
