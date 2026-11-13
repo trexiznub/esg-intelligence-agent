@@ -6,16 +6,23 @@
 
 1. **Report discovery.** Pick one of 61 well-known Indian and global companies (`companies.json`) to find its ESG, sustainability, BRSR or annual report. The agent reads the company's own website (sitemap, sustainability and investor pages) to collect the report PDFs it links to, and also queries a web search engine; only official sources are kept, so other companies' pages never appear.
 2. **Disclosure analysis.** Upload a sustainability report, annual report or BRSR (PDF). An agentic pipeline extracts ESG metrics, checks every quote against the source PDF and lists disclosure gaps.
-3. **Controversy Watch.** Scans recent news for the company, classifies each headline by ESG pillar and evidence stage, and scores severity with a transparent weighted model.
-4. **Say-do check.** Lines up each news controversy against the related topics in the report and flags where the report has no validated disclosure.
+3. **Peer benchmark.** Runs up to four industry peers through the same pipeline, so every company is judged on the same 30 topics, the same quote validation and the same framework mapping. It shows where the company lags and which peers do better (with their values and page references), how each pillar ranks, comparable metrics such as renewable share, women in the workforce, board independence and LTIFR, GRI / BRSR / TCFD alignment, and questions to put to the company.
+4. **Controversy Watch.** Scans recent news for the company, classifies each headline by ESG pillar and evidence stage, and scores severity with a transparent weighted model.
+5. **Say-do check.** Lines up each news controversy against the related topics in the report and flags where the report has no validated disclosure.
 
 Live demo: https://trexiznub.github.io/esg-intelligence-agent/ — a short loading screen and a welcome guide explain how to use it. **View Demo** and **Demo scan** run without a backend on clearly labelled synthetic data.
+
+![Home page](docs/home.png)
+
+| Peer benchmark: analyst brief | Disclosure matrix |
+|---|---|
+| ![Analyst brief](docs/peer-benchmark.png) | ![Disclosure matrix](docs/disclosure-matrix.png) |
 
 | Controversy Watch | Say-do check |
 |---|---|
 | ![Controversy Watch](docs/controversy-watch.png) | ![Say-do check](docs/say-do-check.png) |
 
-*Screenshots show the built-in demo: synthetic headlines about a fictional company.*
+*Screenshots show the built-in demo: a fictional company, fictional peers and synthetic headlines.*
 
 This is a research prototype. It is **not** an ESG rating, assurance opinion, investment recommendation or compliance determination, and a news allegation is not a finding of fault.
 
@@ -35,6 +42,8 @@ FastAPI (backend/main.py)
    |     5 Gap analysis   rule-based
    |     6 Insights       LLM, validated findings only
    |
+   +-- benchmark.py       peer comparison: positions, pillar ranks, KPIs, GRI/BRSR/TCFD (pure code)
+   +-- peers.py           peer store, report download, peer analysis runs
    +-- controversy.py     Controversy Watch
    |     1 Collect        GDELT + Google News RSS (free, no key), de-duplicated
    |     2 Classify       one batched LLM call; labelled keyword rules as fallback
@@ -48,7 +57,7 @@ FastAPI (backend/main.py)
 
 ## Tech stack
 
-Python, FastAPI, PyMuPDF, Google Gemini API, ReportLab, vanilla JS/CSS frontend, pytest, GitHub Actions.
+Python, FastAPI, PyMuPDF, Google Gemini API, ReportLab, vanilla JS/CSS frontend (Archivo and Source Serif 4), pytest, GitHub Actions.
 
 ## Setup
 
@@ -77,7 +86,7 @@ pip install -r requirements-dev.txt
 python -m pytest -q
 ```
 
-The 45 tests cover the scoring model, incident grouping, signals, the say-do check, news parsing and the company report search filter. They use no network and no API key.
+The 64 tests cover the benchmark engine, peer store, company detection, the controversy scoring model, incident grouping, the say-do check, news parsing, the website crawler and the report search filter. API tests run in CI. They use no network and no API key.
 
 ## API
 
@@ -89,6 +98,8 @@ The 45 tests cover the scoring model, incident grouping, signals, the say-do che
 | `GET /api/jobs/{id}/report` | PDF export of the analysis |
 | `POST /api/company-search` | Find reports for a company from the supported list (others return 400) |
 | `GET /companies.json` | The supported company list |
+| `POST /api/benchmark` | Benchmark a finished analysis (`job_id`, optional `company_id`) against up to 4 industry peers |
+| `GET /api/benchmark/{id}` | Progress per peer and the comparison so far |
 | `POST /api/controversies` | News scan for `{company, days}`; add `job_id` of a finished analysis to get the say-do check |
 
 ## How the scoring works
@@ -113,7 +124,30 @@ The **say-do check** maps each of the 23 controversy subcategories to report top
 - **Compare claims**: the report does disclose them, with page references to read against the coverage.
 - **Not covered**: the report taxonomy has no matching topic.
 
+## How the peer benchmark works
+
+Peers come from the same industry group in `companies.json` (same region first). For each peer the agent finds its latest ESG, BRSR, sustainability or annual report on official sources, downloads it and runs the full pipeline. Results are stored, so a peer is analysed once and reused for about 18 months.
+
+| Position | Rule |
+|---|---|
+| Lagging | The company does not disclose the topic with validated evidence; at least half of the peers do |
+| Behind some peers | Not disclosed; 25-49% of peers disclose |
+| Industry gap | Not disclosed; fewer than 25% of peers disclose |
+| Leading | Disclosed; fewer than half of the peers disclose |
+| In line | Disclosed; half or more of the peers disclose |
+
+"Disclosed" means found with High or Medium confidence after quote validation. Comparable metrics are parsed from validated values and ranked only where units compare across company sizes; absolute emissions, energy, water and waste are listed side by side, not ranked. The framework mapping (each topic to a GRI disclosure, BRSR principle and TCFD pillar) is indicative.
+
+To make benchmarks instant on the live site, pre-analyse a peer group locally and commit the result:
+
+```bash
+python -m scripts.build_benchmarks --group "IT services"   # or list ids: infosys tcs wipro
+git add data/benchmarks.json && git commit -m "Seed IT services benchmark" && git push
+```
+
 ## Known limitations
+
+- Peer analysis takes one to two minutes per peer and needs each peer's report to be downloadable from an official source. On a free host the runtime peer store is lost on restart; committed seed data in `data/benchmarks.json` is not.
 
 - Some company websites block automated visitors or build their pages with JavaScript; then only search-engine results (or none) are shown, and the report must be downloaded and uploaded by hand. Results also vary and some reports are web pages rather than PDFs (those must be downloaded and uploaded). To add a company, add an entry with its official domains to `companies.json`.
 
@@ -127,7 +161,7 @@ The **say-do check** maps each of the 23 controversy subcategories to report top
 
 ## How I explain it in an interview
 
-"Most ESG tools either read the company's own report or track the news. I built both and connected them. The report side is an agentic pipeline: retrieval narrows a long PDF to relevant passages, the model extracts metrics with verbatim quotes, and a non-AI validation step checks each quote against the PDF before anything is shown. The news side classifies headlines by pillar and evidence stage, and a transparent weighted model scores severity so an allegation never counts the same as a confirmed violation. The say-do check then joins the two: if the news reports a data breach and the report says nothing about data privacy, that is flagged as a disclosure gap. The scoring is plain code with unit tests, and I state the limits openly, such as headline-only classification and uncalibrated weights."
+"Most ESG tools either read the company's own report or track the news. I built both and connected them. The report side is an agentic pipeline: retrieval narrows a long PDF to relevant passages, the model extracts metrics with verbatim quotes, and a non-AI validation step checks each quote against the PDF before anything is shown. The news side classifies headlines by pillar and evidence stage, and a transparent weighted model scores severity so an allegation never counts the same as a confirmed violation. For benchmarking, I run each industry peer's own report through the same pipeline rather than relying on a third-party dataset, so the comparison is like-for-like on scope and every peer figure has a page reference; the output tells an analyst where the company lags and which peers do better. The say-do check then joins the two: if the news reports a data breach and the report says nothing about data privacy, that is flagged as a disclosure gap. The scoring is plain code with unit tests, and I state the limits openly, such as headline-only classification and uncalibrated weights."
 
 ---
 

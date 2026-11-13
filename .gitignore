@@ -27,3 +27,6 @@ venv/
 # Temporary files
 *.tmp
 *.log
+# Runtime peer store (rebuilt by the server)
+data/peer_store.json
+data/*.tmp
