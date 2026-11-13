@@ -82,3 +82,15 @@ def test_dead_site_returns_empty_not_error():
 def test_link_extraction_handles_entities_and_junk():
     links = sc.extract_links('<a href="/a?x=1&amp;y=2">A</a><a href="mailto:x@y.z">m</a><a href="#top">t</a>', "https://acme.com/p/")
     assert links == [("https://acme.com/a?x=1&y=2", "A")]
+
+
+def test_seed_pages_are_crawled_first():
+    co = {**CO, "pages": ["https://www.acme.com/investors/annual-reports"]}
+    asked = []
+
+    def fetch(url):
+        asked.append(url)
+        return SITE.get(url)
+
+    sc.crawl(co, fetch=fetch, max_pages=1)
+    assert [u for u in asked if not u.endswith((".txt", ".xml"))] == ["https://www.acme.com/investors/annual-reports"]

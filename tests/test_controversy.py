@@ -187,3 +187,51 @@ def test_analyse_assembles_a_complete_result():
     assert 0 < out["risk"]["overall"] <= 100 and out["risk"]["S"] == 0
     assert out["say_do"] == []
     json.dumps(out)  # must be JSON serialisable for the API
+
+
+def _feed(n_days_list):
+    """Fake GDELT feed: one ESG headline per age in days."""
+    arts = []
+    for i, d in enumerate(n_days_list):
+        seen = (datetime.now(timezone.utc) - timedelta(days=d)).strftime("%Y%m%dT%H%M%SZ")
+        arts.append({"url": f"https://n.com/{i}", "title": f"Regulator opens probe into Acme unit {i} over effluent discharge",
+                     "domain": "n.com", "seendate": seen})
+    body = json.dumps({"articles": arts})
+    return lambda url: body if "gdeltproject" in url else "<rss></rss>"
+
+
+def test_windows_are_nested_and_stories_classified_once():
+    cw._MASTER.clear(); cw._CLASS.clear()
+    get = _feed([2, 20, 45, 80, 120, 170])
+    calls = []
+
+    def llm(prompt):
+        calls.append(prompt)
+        n = prompt.count("\n") and len([l for l in prompt.split("HEADLINES:")[1].splitlines() if l.strip()])
+        return [{"i": i, "esg_relevant": True, "about_company": True, "pillar": "E", "subcategory": "Pollution",
+                 "stage": "investigation", "magnitude": 60, "scale": 50, "regulatory": 70, "reputational": 60,
+                 "financial": 40, "source_credibility": 70, "confidence": 50} for i in range(n)]
+
+    r30, r90, r180 = (cw.scan("Acme", d, llm_json=llm, get=get) for d in (30, 90, 180))
+    assert len(calls) == 1  # one batch, classified once, reused by every window
+    rel = [r["counts"]["relevant"] for r in (r30, r90, r180)]
+    assert rel == [2, 4, 6]
+    assert r30["windows"] == r90["windows"] == r180["windows"]
+    assert r30["windows"]["90"]["relevant"] == r90["counts"]["relevant"]
+    assert r30["risk"]["overall"] <= r90["risk"]["overall"] <= r180["risk"]["overall"]
+    assert cw.scan("Acme", 90, llm_json=llm, get=get)["counts"] == r90["counts"]  # repeat scans agree
+    assert r90["classifier"] == "llm"
+
+
+def test_failed_llm_batch_falls_back_and_is_retried_later():
+    cw._MASTER.clear(); cw._CLASS.clear()
+    get = _feed([3, 10])
+
+    def broken(prompt):
+        raise TimeoutError
+
+    r = cw.scan("Acme", 30, llm_json=broken, get=get)
+    assert r["classifier"] == "rules" and any("will be retried" in n for n in r["sources"])
+    ok = []
+    cw.scan("Acme", 30, llm_json=lambda p: ok.append(1) or [], get=get)
+    assert ok == [1]  # the stories were not cached as final, so the LLM is asked again

@@ -4,271 +4,280 @@
 <title>ESG Intelligence</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Source+Serif+4:opsz,wght@8..60,400..600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@300..600&display=swap" rel="stylesheet">
 <style>
-/* ESG Intelligence: "working paper" design system.
-   Fog paper, peat ink, spruce for evidence, ochre for "check this", madder for shortfalls.
-   Archivo (narrow, heavy) for structure and numbers; Source Serif 4 for findings and prose. */
-:root{
-  --paper:#E9EDEA;--paper2:#E1E7E3;--sheet:#FAFBFA;--ink:#1E2A26;--ink2:#46534E;--ink3:#6F7D77;
-  --rule:#CDD5D1;--rule2:#B4BFBA;--spruce:#1F5C4A;--spruce2:#174637;--spruce-bg:#DDEAE3;
-  --ochre:#8F6418;--ochre-bg:#F1E6CF;--madder:#963040;--madder-bg:#F1DEE1;
-  --sans:'Archivo',system-ui,sans-serif;--serif:'Source Serif 4',Georgia,serif;
-  --r:6px;--ez:cubic-bezier(.2,.7,.2,1);
+/* ESG Intelligence — green "living meadow" system.
+   Sage page, white and deep-forest cards, pill controls, Onest throughout. */
+:root{color-scheme:dark;
+  --bg:#0A1712;--card:#10221A;--card2:#0D1D16;--ink:#E9F2EC;--ink2:#B3C5B9;--ink3:#7E9387;
+  --line:rgba(220,240,226,.09);--line2:rgba(220,240,226,.17);--forest:#12301F;--forest2:#0D2418;--leaf:#7CCB93;--leaf2:#5FAE77;
+  --btn:#C6E8CF;--btn2:#DCF2E1;--mint:rgba(124,203,147,.12);--mint2:rgba(124,203,147,.22);--good:#8FDCA6;
+  --ochre:#E2B45E;--ochre-bg:rgba(226,180,94,.13);--clay:#EE8F7E;--clay-bg:rgba(238,143,126,.13);--hover:rgba(124,203,147,.06);
+  --font:'Onest',system-ui,-apple-system,sans-serif;--r1:28px;--r2:20px;--r3:14px;--ez:cubic-bezier(.2,.7,.2,1);
   /* aliases used by older inline styles */
-  --bg:var(--paper);--s1:var(--sheet);--s2:var(--paper2);--tx:var(--ink);--ts:var(--ink2);--tm:var(--ink3);
-  --bd:var(--rule);--bds:var(--rule2);--g:var(--spruce);--gb:var(--spruce);--gd:var(--spruce2);--am:var(--ochre);--rd:var(--madder)}
-*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
-body{margin:0;min-height:100vh;background:var(--paper);color:var(--ink);font:400 16px/1.55 var(--sans);font-variation-settings:"wdth" 100;
-  font-feature-settings:"tnum" 1,"lnum" 1;-webkit-font-smoothing:antialiased;padding-bottom:env(safe-area-inset-bottom,0px)}
-h1,h2,h3,h4{font-family:var(--sans);color:var(--ink);margin:0;line-height:1.1}
-h1{font-size:clamp(40px,6.4vw,78px);font-weight:800;font-variation-settings:"wdth" 68;letter-spacing:-.01em;line-height:.98}
-h2{font-size:24px;font-weight:750;font-variation-settings:"wdth" 82;margin:44px 0 6px}
-h3{font-size:17px;font-weight:650;margin:0 0 8px}
-p{margin:0 0 10px;max-width:72ch}
-a{color:var(--spruce)}
-button{font:inherit;color:inherit;cursor:pointer}
-:focus-visible{outline:2px solid var(--spruce);outline-offset:2px}
-.hide{display:none}
-.muted{color:var(--ink3)}
+  --paper:var(--bg);--paper2:var(--mint);--sheet:var(--card);--rule:var(--line);--rule2:var(--line2);
+  --spruce:var(--leaf);--spruce2:var(--forest);--spruce-bg:var(--mint);--madder:var(--clay);--madder-bg:var(--clay-bg);
+  --s1:var(--card);--s2:var(--mint);--tx:var(--ink);--ts:var(--ink2);--tm:var(--ink3);--bd:var(--line);--bds:var(--line2);
+  --g:var(--leaf);--gb:var(--leaf);--gd:var(--forest);--am:var(--ochre);--rd:var(--clay)}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font:400 16px/1.6 var(--font);-webkit-font-smoothing:antialiased;
+  font-variant-numeric:tabular-nums;padding-bottom:env(safe-area-inset-bottom,0px)}
+h1,h2,h3,h4{margin:0;color:var(--ink);font-family:var(--font);letter-spacing:-.02em}
+h1{font-size:clamp(40px,6vw,72px);font-weight:400;line-height:1.04;letter-spacing:-.035em}
+h2{font-size:clamp(26px,3vw,34px);font-weight:400;line-height:1.15;margin:56px 0 10px;letter-spacing:-.025em}
+h3{font-size:18px;font-weight:500;margin:0 0 8px;letter-spacing:-.01em}
+p{margin:0 0 10px;max-width:70ch}
+a{color:var(--leaf)}button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--leaf);outline-offset:3px}
+.hide{display:none}.muted{color:var(--ink3)}.num{font-variant-numeric:tabular-nums}
 .note{font-size:13.5px;color:var(--ink3);max-width:80ch}
-.lede{font-family:var(--serif);font-size:17px;line-height:1.6;color:var(--ink2);max-width:68ch}
-.k{font-size:13px;font-weight:600;color:var(--ink3);margin:0 0 6px;letter-spacing:.005em}
-.num{font-variant-numeric:tabular-nums}
+.lede{font-size:17px;line-height:1.65;color:var(--ink2);max-width:66ch}
+.k{font-size:13px;font-weight:500;color:var(--ink3);margin:0 0 6px}
 
-/* masthead */
-header{position:sticky;top:0;z-index:50;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;
-  padding:14px clamp(16px,4vw,40px);padding-top:calc(14px + env(safe-area-inset-top,0px));background:var(--sheet);border-bottom:1px solid var(--rule)}
-.logo{display:flex;align-items:center;gap:10px;font:800 19px var(--sans);font-variation-settings:"wdth" 72;letter-spacing:.01em;cursor:pointer;background:none;border:0;padding:0;color:var(--ink)}
-.logo svg{width:22px;height:22px}
-nav{display:flex;gap:2px;flex-wrap:wrap}
-nav button{background:none;border:0;padding:8px 12px;border-radius:4px;color:var(--ink2);font-size:14.5px;font-weight:500}
-nav button:hover{color:var(--ink);background:var(--paper)}
-nav button.on{color:var(--ink);font-weight:650;box-shadow:inset 0 -2px 0 var(--ink)}
-main{max-width:1180px;margin:0 auto;padding:36px clamp(16px,4vw,40px) 64px;min-height:70vh}
-footer{border-top:1px solid var(--rule);background:var(--sheet);color:var(--ink3);font-size:13px;padding:22px clamp(16px,4vw,40px);display:flex;gap:8px 24px;justify-content:space-between;flex-wrap:wrap}
-footer p{margin:0;max-width:none}
+/* top bar */
+header{position:sticky;top:12px;z-index:50;max-width:1180px;margin:12px auto 0;display:flex;align-items:center;gap:16px;
+  padding:10px 10px 10px 20px;background:rgba(13,29,22,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid var(--line);border-radius:999px;width:calc(100% - 24px)}
+.logo{display:flex;align-items:center;gap:9px;font:600 17px var(--font);letter-spacing:-.02em;background:none;border:0;padding:0;color:var(--ink);white-space:nowrap}
+.logo svg{width:24px;height:24px}
+nav{display:flex;gap:2px;flex-wrap:wrap;margin:0 auto}
+nav button{background:none;border:0;padding:8px 13px;border-radius:999px;color:var(--ink2);font-size:14.5px}
+nav button:hover{color:var(--ink);background:var(--mint)}
+nav button.on{color:var(--ink);background:var(--mint);font-weight:500}
+.hdr-cta{flex:none}
+main{max-width:1180px;margin:0 auto;padding:28px 12px 72px;min-height:70vh}
+footer{max-width:1180px;margin:0 auto 24px;width:calc(100% - 24px);background:var(--card);border:1px solid var(--line);color:var(--ink3);border-radius:var(--r1);
+  padding:28px 32px;display:flex;gap:10px 32px;justify-content:space-between;flex-wrap:wrap;font-size:13.5px;position:relative;overflow:hidden}
+footer p{margin:0;max-width:72ch}footer b{color:var(--ink);font-weight:500}
 
 /* controls */
-.btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font:600 14.5px var(--sans);padding:10px 18px;border-radius:var(--r);
-  border:1px solid var(--ink);background:var(--sheet);color:var(--ink);transition:background .15s,color .15s,border-color .15s}
-.btn:hover{background:var(--ink);color:var(--sheet)}
-.btn.primary{background:var(--spruce);border-color:var(--spruce);color:#fff}.btn.primary:hover{background:var(--spruce2);border-color:var(--spruce2)}
-.btn.s{border-color:var(--rule2);background:transparent}.btn.s:hover{border-color:var(--ink);background:var(--sheet);color:var(--ink)}
-.btn.sm{padding:6px 12px;font-size:13.5px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;font:500 14.5px var(--font);padding:11px 22px;
+  border-radius:999px;border:1px solid var(--line2);background:var(--card);color:var(--ink);transition:background .15s,border-color .15s,color .15s}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--btn);border-color:var(--btn);color:#0A1712}.btn.primary:hover{background:var(--btn2);border-color:var(--btn2)}
+.btn.s{background:transparent}.btn.sm{padding:7px 15px;font-size:13.5px}
 .btn:disabled{opacity:.55;cursor:wait}
-.inp{padding:10px 12px;border-radius:var(--r);border:1px solid var(--rule2);background:var(--sheet);color:var(--ink);font:inherit;outline:none;min-height:42px}
-.inp:focus{border-color:var(--spruce);box-shadow:0 0 0 3px var(--spruce-bg)}
-.seg{display:flex;border:1px solid var(--rule2);border-radius:var(--r);overflow:hidden;background:var(--sheet)}
-.seg button{border:0;background:none;padding:0 16px;color:var(--ink2);font-size:14px}.seg button+button{border-left:1px solid var(--rule)}
-.seg button.on{background:var(--ink);color:var(--sheet);font-weight:600}
-a.lnk{color:var(--spruce);cursor:pointer;font-size:13.5px;text-decoration:underline;text-decoration-color:var(--rule2);text-underline-offset:3px}
-a.lnk:hover{text-decoration-color:var(--spruce)}
+.inp{padding:11px 16px;border-radius:999px;border:1px solid var(--line2);background:var(--card);color:var(--ink);font:inherit;outline:none;min-height:44px}
+select.inp{padding-right:36px}
+.inp:focus{border-color:var(--leaf);box-shadow:0 0 0 4px var(--mint)}
+.seg{display:flex;padding:4px;gap:2px;border-radius:999px;background:var(--mint)}
+.seg button{border:0;background:none;padding:6px 16px;border-radius:999px;color:var(--ink2);font-size:14px}
+.seg button.on{background:var(--btn);color:#0A1712;font-weight:500}
+a.lnk{color:var(--leaf);cursor:pointer;font-size:13.5px;font-weight:500;text-decoration:none}
+a.lnk:hover{text-decoration:underline;text-underline-offset:3px}
 
-/* surfaces: one panel style, used only where content needs a boundary */
-.card,.panel{background:var(--sheet);border:1px solid var(--rule);border-radius:var(--r);padding:20px 22px}
+/* surfaces */
+.card,.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:22px 24px}
 .card p{color:var(--ink2);font-size:15px}
 .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin-bottom:14px}
 section{margin-bottom:8px}
-.big{font:800 34px var(--sans);font-variation-settings:"wdth" 70;letter-spacing:-.005em}
+.big{font:400 40px/1.1 var(--font);letter-spacing:-.03em}
 
-/* status labels: a coloured square, not a pill */
-.tag{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;white-space:nowrap;color:var(--ink2)}
-.tag::before{content:"";width:9px;height:9px;border-radius:1px;background:currentColor;flex:none}
-.Disclosed,.Found,.Strong,.High,.sev0,.pos{color:var(--spruce)}
-.Inferred,.Requires,.Moderate,.Medium,.Limited,.sev1,.sev2,.warn{color:var(--ochre)}
-.Not,.Low,.None,.sev3,.sev4,.neg{color:var(--madder)}
-.sev4::before{box-shadow:0 0 0 2px var(--madder-bg)}
-.mid{color:var(--ink2)}.muted.pos,.pos.muted{color:var(--ink3)}
-.pos{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:650;white-space:nowrap}
-.pos::before{content:"";width:9px;height:9px;border-radius:1px;background:currentColor}
-.meter{height:6px;border-radius:1px;background:var(--paper2);overflow:hidden}
-.meter div{height:100%;width:var(--w);background:var(--spruce)}
-.meter.peer div{background:var(--rule2)}
+/* labels: soft pills */
+.tag,.pos{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:500;white-space:nowrap;padding:3px 10px 3px 8px;border-radius:999px;background:var(--mint);color:var(--ink2)}
+.tag::before,.pos::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+.Disclosed,.Found,.Strong,.High,.sev0,.pos.pos-good{color:var(--good);background:var(--mint)}
+.Inferred,.Requires,.Moderate,.Medium,.Limited,.sev1,.sev2,.warn{color:var(--ochre);background:var(--ochre-bg)}
+.Not,.Low,.None,.sev3,.sev4,.neg{color:var(--clay);background:var(--clay-bg)}
+.mid{color:var(--ink2);background:rgba(220,240,226,.07)}.pos.muted{color:var(--ink3);background:rgba(220,240,226,.07)}
+.good{color:var(--good);background:var(--mint)}
+.meter{height:8px;border-radius:999px;background:var(--mint);overflow:hidden}
+.meter div{height:100%;width:var(--w);background:var(--leaf);border-radius:999px}
+.meter.peer div{background:var(--line2)}
 
-/* tables */
-.tabs{display:flex;gap:0;border-bottom:1px solid var(--rule2);margin:34px 0 22px;flex-wrap:wrap;align-items:flex-end}
-.tabs button{background:none;border:0;padding:10px 14px;color:var(--ink3);font-size:14.5px;font-weight:600;border-bottom:2px solid transparent;margin-bottom:-1px}
-.tabs button:hover{color:var(--ink)}
-.tabs button.on{color:var(--ink);border-bottom-color:var(--ink)}
-.tabs .btn{margin:0 0 8px;border:1px solid var(--rule2);color:var(--ink);padding:6px 12px}.tabs .btn:hover{border-color:var(--ink);color:var(--sheet)}
-.tw{overflow-x:auto;border:1px solid var(--rule);border-radius:var(--r);background:var(--sheet)}
+/* tabs and tables */
+.tabs{display:flex;gap:4px;padding:5px;background:var(--card);border:1px solid var(--line);border-radius:999px;margin:30px 0 22px;flex-wrap:wrap;align-items:center}
+.tabs button{background:none;border:0;padding:8px 16px;border-radius:999px;color:var(--ink2);font-size:14.5px}
+.tabs button:hover{background:var(--mint);color:var(--ink)}
+.tabs button.on{background:var(--btn);color:#0A1712;font-weight:500}
+.tabs .btn{margin-left:auto}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r2);background:var(--card)}
 table{width:100%;border-collapse:collapse;font-size:14.5px;min-width:720px}
-th{font-weight:650;font-size:13px;color:var(--ink2);text-align:left;background:var(--sheet);border-bottom:1px solid var(--rule2);position:sticky;top:0}
-th,td{padding:11px 14px;vertical-align:top;text-align:left}
-td{border-bottom:1px solid var(--rule)}
-tbody tr:last-child td{border-bottom:0}
-tbody tr:hover td{background:#F3F6F4}
-td.val{font-family:var(--serif);font-size:15.5px}
-/* page references sit in a margin column, like an auditor's note */
-td.src{border-left:1px dashed var(--rule2);white-space:nowrap;width:1%}
-.pg{display:inline-block;font-weight:700;font-size:12.5px;color:var(--spruce);border:1px solid var(--spruce);border-radius:3px;padding:0 5px;line-height:18px;font-variation-settings:"wdth" 80}
+th{font-weight:500;font-size:13px;color:var(--ink3);text-align:left;background:var(--card2);border-bottom:1px solid var(--line)}
+th,td{padding:12px 16px;vertical-align:top;text-align:left}
+td{border-bottom:1px solid var(--line)}tbody tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:var(--hover)}
+td.val{font-weight:500}
+td.src{white-space:nowrap;width:1%}
+.pg{display:inline-block;font-weight:600;font-size:12px;color:var(--good);background:var(--mint);border-radius:6px;padding:1px 7px;line-height:18px}
 td.src .pg{margin-bottom:4px}
 
 /* hero */
-.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(28px,5vw,64px);align-items:center;padding:28px 0 56px;border-bottom:1px solid var(--rule2)}
-.hero p.sub{font-family:var(--serif);font-size:19px;line-height:1.6;color:var(--ink2);margin:22px 0 28px;max-width:56ch}
-.cta{display:flex;gap:10px;flex-wrap:wrap}
-.slip{margin:0;background:var(--sheet);border:1px solid var(--rule2);border-radius:var(--r);box-shadow:0 1px 0 var(--rule),0 18px 40px -24px rgba(30,42,38,.35)}
-.slip .sh{display:flex;justify-content:space-between;gap:12px;padding:12px 18px;border-bottom:1px solid var(--rule);font-size:13px;color:var(--ink3)}
-.slip .sh b{color:var(--ink);font-weight:650}
-.slip .row{display:grid;grid-template-columns:1fr auto;gap:4px 16px;padding:14px 18px;border-bottom:1px solid var(--rule)}
-.slip .row:last-of-type{border-bottom:0}
-.slip .t{font-size:13.5px;color:var(--ink3);font-weight:600}
-.slip .v{font-family:var(--serif);font-size:21px;color:var(--ink)}
-.slip .v.neg{color:var(--madder)}
-.slip .mg{grid-row:1/3;grid-column:2;align-self:center;text-align:right;font-size:12.5px;color:var(--ink3);max-width:20ch;border-left:1px dashed var(--rule2);padding-left:14px}
-.slip .mg .pg{display:inline-block;margin-bottom:4px}
-.slip .tick{color:var(--spruce);font-weight:700}
-.slip figcaption{padding:10px 18px;font-size:12.5px;color:var(--ink3);border-top:1px solid var(--rule);background:var(--paper)}
-.offer{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0 28px;margin:40px 0 12px}
-.offer div{border-top:2px solid var(--ink);padding-top:14px}
-.offer p{font-family:var(--serif);color:var(--ink2);font-size:15.5px}
-.how{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;counter-reset:s;margin-top:14px;border:1px solid var(--rule);border-radius:var(--r);background:var(--sheet)}
-.how li{list-style:none;padding:16px 18px;border-left:1px solid var(--rule);counter-increment:s;margin:0;color:var(--ink2);font-size:14.5px}
-.how li:first-child{border-left:0}
-.how li::before{content:counter(s);display:block;font:800 26px var(--sans);font-variation-settings:"wdth" 70;color:var(--rule2);margin-bottom:6px}
-.how b{display:block;color:var(--ink);margin-bottom:2px}
+.hero{position:relative;border-radius:var(--r1);overflow:hidden;min-height:clamp(560px,66vw,680px);
+  background:radial-gradient(120% 70% at 50% 0%,#1E4A35 0%,rgba(30,74,53,0) 60%),linear-gradient(180deg,#112C20 0%,#143426 45%,#1A4231 75%,#1E4B37 100%);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;text-align:center;padding:64px 20px 0}
+.hero .mark{width:30px;height:30px;margin-bottom:16px}
+.hero h1{max-width:19ch;position:relative;z-index:3}
+.hero p.sub{font-size:17px;line-height:1.6;color:var(--ink2);margin:18px auto 26px;max-width:46ch;position:relative;z-index:3}
+.hero .cta{position:relative;z-index:3}
+.cta{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.meadow{position:absolute;left:0;right:0;bottom:0;height:46%;pointer-events:none}
+.meadow .back,.meadow .front{position:absolute;inset:0}.meadow svg{position:absolute;inset:0;width:100%;height:100%}
+.meadow .front{z-index:2}
+.doc{position:absolute;z-index:1;background:#EEF5EF!important;width:clamp(110px,13vw,168px);aspect-ratio:3/4;background:#fff;border-radius:16px;
+  box-shadow:0 24px 40px -18px rgba(16,36,26,.45),inset 0 0 0 1px rgba(16,36,26,.06);padding:16px 14px;text-align:left}
+.doc i{display:block;height:6px;border-radius:9px;background:#E4ECE1;margin:8px 0}.doc i.w{width:60%}.doc i.g{background:#CFE5C9;width:80%}
+.doc b{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#235C33;background:#E1EFDC;padding:3px 8px;border-radius:999px}
+.doc.d1{left:10%;bottom:6%;transform:rotate(-14deg)}.doc.d2{right:9%;bottom:4%;transform:rotate(11deg)}
+.intro{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:start;margin:72px 0 34px}
+.intro h2{margin:0 0 20px;font-size:clamp(32px,4vw,48px)}
+.intro p{font-size:clamp(19px,2vw,23px);line-height:1.45;color:var(--ink);letter-spacing:-.01em}
+.feat3{display:grid;grid-template-columns:1.7fr 1fr 1fr;gap:14px}
+.fc{border-radius:var(--r2);padding:24px;min-height:300px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.fc h3{font-size:clamp(20px,2vw,24px);font-weight:400;letter-spacing:-.02em;max-width:14ch;position:relative;z-index:1}
+.fc p{font-size:14px;line-height:1.55;margin:0;max-width:34ch;position:relative;z-index:1}
+.fc.light{background:linear-gradient(160deg,#1A3D2C,#10271C);border:1px solid var(--line)}
+.fc.light p{color:var(--ink2)}
+.fc.dark{background:var(--card);border:1px solid var(--line)}.fc.dark p{color:var(--ink2)}
+.fc .art{position:absolute;right:0;bottom:34px;width:58%;height:88%}
+.fc-meadow{position:absolute;left:0;right:0;bottom:0;height:74px}.fc-meadow svg{width:100%;height:100%;display:block}
+.fc.light p{max-width:30ch;margin-bottom:58px}
+.strip-logos{display:flex;align-items:center;justify-content:space-between;gap:16px 34px;flex-wrap:wrap;margin:34px 0 0;padding:22px 4px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.strip-logos p{font-size:13px;color:var(--ink3);margin:0;max-width:26ch}
+.strip-logos span{font-weight:600;font-size:17px;color:#7F9285;letter-spacing:-.01em}
+.how{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:18px 0 0;padding:0;counter-reset:s}
+.how li{list-style:none;background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:20px;margin:0;color:var(--ink2);font-size:14.5px;counter-increment:s}
+.how li::before{content:counter(s);display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--mint);color:var(--good);font-weight:600;font-size:14px;margin-bottom:14px}
+.how b{display:block;color:var(--ink);font-weight:500;margin-bottom:2px}
 
-/* report header on the dashboard */
-.rephead{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:end;padding-bottom:22px;border-bottom:1px solid var(--rule2)}
-.rephead h1{font-size:clamp(32px,4.4vw,52px)}
+/* report header */
+.rephead{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:end;background:var(--card);border:1px solid var(--line);border-radius:var(--r1);padding:28px 30px;position:relative;overflow:hidden}
+.rephead h1{font-size:clamp(30px,4vw,48px)}
 .rephead .meta{color:var(--ink3);margin:8px 0 0}
-.cov{text-align:right}
-.cov b{display:block;font:800 64px/1 var(--sans);font-variation-settings:"wdth" 64}
+.cov{text-align:right;position:relative;z-index:1}
+.cov b{display:block;font:300 68px/1 var(--font);letter-spacing:-.04em;color:var(--leaf)}
 .cov span{font-size:13.5px;color:var(--ink3)}
-.pillars{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 28px;margin-top:20px}
-.pl .ph{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
-.pl .ph b{font-weight:650}.pl .ph span{font-size:13.5px;color:var(--ink3)}
-.pl .tag{margin-top:8px}
+.pillars{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:14px}
+.pl{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:18px 20px}
+.pl .ph{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.pl .ph b{font-weight:500}.pl .ph span{font-size:13.5px;color:var(--ink3)}
+.pl .tag{margin-top:12px}
 
 /* upload, pipeline, banners */
-.drop{text-align:center;padding:44px 20px;border:1.5px dashed var(--rule2);border-radius:var(--r);background:var(--sheet);cursor:pointer;transition:border-color .15s,background .15s}
-.drop:hover,.drop.hv{border-color:var(--spruce);background:#F4F8F6}
-.drop .up{width:34px;height:34px;stroke:var(--spruce);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;margin-bottom:6px}
+.drop{text-align:center;padding:48px 20px;border:1.5px dashed var(--line2);border-radius:var(--r2);background:var(--card);cursor:pointer;transition:border-color .15s,background .15s}
+.drop:hover,.drop.hv{border-color:var(--leaf);background:var(--hover)}
+.drop .up{width:36px;height:36px;stroke:var(--leaf);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;margin-bottom:8px}
 .drop span{color:var(--ink3);font-size:14px}
 .pipe{display:flex;flex-direction:column;max-width:460px;margin-top:14px}
 .st{display:flex;gap:12px;align-items:center;padding:7px 0;color:var(--ink3);font-size:14.5px;position:relative}
-.st i{width:11px;height:11px;border-radius:2px;border:1.5px solid var(--rule2);flex:none;background:var(--sheet);position:relative;z-index:1}
-.st:not(:last-child)::after{content:"";position:absolute;left:5px;top:24px;bottom:-8px;width:1px;background:var(--rule2)}
-.st.done{color:var(--ink)}.st.done i{background:var(--spruce);border-color:var(--spruce)}
-.st.run{color:var(--ink);font-weight:650}.st.run i{border-color:var(--spruce);animation:blink 1s steps(2) infinite}
-.st.err{color:var(--madder)}.st.err i{background:var(--madder);border-color:var(--madder)}
-.bar{height:4px;background:var(--paper2);border-radius:1px;overflow:hidden;margin:12px 0}
-.bar div{height:100%;width:0;background:var(--spruce);transition:width .4s var(--ez)}
-.banner{background:var(--ochre-bg);color:#5E4210;border-left:3px solid var(--ochre);border-radius:2px;padding:10px 16px;font-size:14px;font-weight:550;margin-bottom:18px}
-.banner.info{background:var(--spruce-bg);color:var(--spruce2);border-left-color:var(--spruce)}
-.err{background:var(--madder-bg);color:#6E1F2C;border-left:3px solid var(--madder);border-radius:2px;padding:11px 16px;margin:14px 0;font-size:14.5px}
+.st i{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--line2);flex:none;background:var(--card);position:relative;z-index:1}
+.st:not(:last-child)::after{content:"";position:absolute;left:5.5px;top:24px;bottom:-8px;width:1px;background:var(--line2)}
+.st.done{color:var(--ink)}.st.done i{background:var(--leaf);border-color:var(--leaf)}
+.st.run{color:var(--ink);font-weight:500}.st.run i{border-color:var(--leaf);animation:pulse 1.2s ease-in-out infinite}
+.st.err{color:var(--clay)}.st.err i{background:var(--clay);border-color:var(--clay)}
+.bar{height:6px;background:var(--mint);border-radius:999px;overflow:hidden;margin:12px 0}
+.bar div{height:100%;width:0;background:var(--leaf);border-radius:999px;transition:width .4s var(--ez)}
+.banner{background:var(--ochre-bg);color:var(--ochre);border-radius:var(--r3);padding:11px 18px;font-size:14px;font-weight:500;margin-bottom:16px}
+.banner.info{background:var(--mint);color:var(--leaf)}
+.err{background:var(--clay-bg);color:var(--clay);border-radius:var(--r3);padding:12px 18px;margin:14px 0;font-size:14.5px}
 
 /* modal */
-.modal{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(30,42,38,.42);animation:fade .2s both}
-.modal .card{max-width:680px;width:100%;max-height:84vh;overflow:auto;box-shadow:0 30px 70px -30px rgba(0,0,0,.45)}
-blockquote{margin:8px 0 16px;padding:10px 16px;border-left:3px solid var(--spruce);background:var(--paper);font-family:var(--serif);font-size:15.5px;color:var(--ink2)}
+.modal{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(3,10,7,.6);backdrop-filter:blur(4px);animation:fade .2s both}
+.modal .card{max-width:680px;width:100%;max-height:84vh;overflow:auto;border-radius:var(--r1);box-shadow:0 30px 70px -30px rgba(0,0,0,.45)}
+blockquote{margin:8px 0 16px;padding:14px 18px;border-radius:var(--r3);background:var(--mint);font-size:15.5px;color:var(--ink)}
 
 /* company picker */
-.colist{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px;margin-top:14px;max-height:304px;overflow:auto;padding:2px}
-.co{text-align:left;background:var(--sheet);border:1px solid var(--rule);border-radius:4px;padding:9px 12px;transition:border-color .12s}
-.co:hover,.co.on{border-color:var(--ink)}
-.co b{display:block;font-size:14.5px;font-weight:600}.co span{font-size:12.5px;color:var(--ink3)}
+.colist{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px;margin-top:14px;max-height:316px;overflow:auto;padding:2px}
+.co{text-align:left;background:var(--card2);border:1px solid var(--line);border-radius:var(--r3);padding:11px 14px;transition:border-color .12s,background .12s}
+.co:hover,.co.on{border-color:var(--leaf);background:var(--card)}
+.co b{display:block;font-size:14.5px;font-weight:500}.co span{font-size:12.5px;color:var(--ink3)}
 .fgrid{display:grid;grid-template-columns:auto 1fr auto;gap:6px 12px;align-items:center;font-size:13px;color:var(--ink2);margin:10px 0}
 .fgrid i{color:var(--ink3);font-style:normal}
 ul{padding-left:20px;margin:6px 0 0}li{margin:5px 0;color:var(--ink2)}
-.grid .card ul li{font-family:var(--serif);font-size:15px}
 
 /* peer benchmark */
 .formrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:16px 0 10px}
-.formrow label{font-weight:600;font-size:14px}
-.formrow select{min-width:260px}
-.peerlist{margin-bottom:22px}
-.peerlist ul{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;border:1px solid var(--rule);border-radius:var(--r);background:var(--sheet)}
-.peerlist li{margin:0;padding:12px 14px;border-left:1px solid var(--rule);display:flex;flex-direction:column;gap:2px;font-size:13.5px}
-.peerlist li:first-child{border-left:0}
-.peerlist li b{color:var(--ink);font-size:14.5px}
-.ps.running span{color:var(--spruce)}.ps.queued span{color:var(--ink3)}.ps.failed span{color:var(--madder)}
-.brief{background:var(--sheet);border:1px solid var(--rule);border-top:3px solid var(--ink);border-radius:var(--r);padding:22px 26px 10px}
-.brief h2{margin:0 0 10px}
-.brief .lead{font-family:var(--serif);font-size:20px;line-height:1.55;color:var(--ink);max-width:70ch}
-.twocol{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px 40px;margin-top:18px}
+.formrow label{font-weight:500;font-size:14px}.formrow select{min-width:260px}
+.peerlist{margin-bottom:18px}
+.peerlist ul{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.peerlist li{margin:0;padding:14px 16px;background:var(--card);border:1px solid var(--line);border-radius:var(--r3);display:flex;flex-direction:column;gap:2px;font-size:13.5px}
+.peerlist li b{color:var(--ink);font-size:14.5px;font-weight:500}
+.ps.running span{color:var(--leaf)}.ps.queued span{color:var(--ink3)}.ps.failed span{color:var(--clay)}
+.brief{background:linear-gradient(160deg,#173A2A,#10271C);border:1px solid var(--line);color:#DCE8DF;border-radius:var(--r1);padding:30px 32px 20px}
+.brief h2{margin:0 0 12px;color:#fff;font-size:26px}
+.brief .lead{font-size:20px;line-height:1.5;color:#fff;max-width:68ch;letter-spacing:-.01em}
+.brief h3{color:#fff}.brief .note{color:#A9C2B0}
+.twocol{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px 40px;margin-top:20px}
 .twocol h3{margin-top:12px}
 ul.lag,ul.lead-list,ul.plain{list-style:none;padding:0}
-ul.lag>li{border-top:1px solid var(--rule);padding:10px 0;margin:0}
+ul.lag>li{border-top:1px solid rgba(255,255,255,.14);padding:12px 0;margin:0}
 .lh{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
-.lh b{color:var(--madder)}.lh span{font-size:13px;color:var(--ink3);white-space:nowrap}
-ul.who{list-style:none;padding:0;margin:6px 0 0}
-ul.who li{font-family:var(--serif);font-size:14.5px;margin:2px 0}
-ul.lead-list li{border-top:1px solid var(--rule);padding:10px 0;margin:0;font-family:var(--serif)}
-ul.lead-list li b{font-family:var(--sans);color:var(--spruce)}
-ul.lead-list .note{display:block;font-family:var(--sans)}
-ul.plain li{border-top:1px solid var(--rule);padding:8px 0;margin:0;font-size:14.5px}
-.strips{background:var(--sheet);border:1px solid var(--rule);border-radius:var(--r);padding:8px 22px}
-.strip{display:grid;grid-template-columns:180px 1fr 300px;gap:20px;align-items:center;padding:14px 0;border-bottom:1px solid var(--rule)}
+.lh b{color:#F3B8A8;font-weight:500}.lh span{font-size:13px;color:#A9C2B0;white-space:nowrap}
+ul.who{list-style:none;padding:0;margin:6px 0 0}ul.who li{font-size:14px;margin:3px 0;color:#DCE8DF}
+.brief .pg{background:rgba(255,255,255,.12);color:#CFE6D3}
+ul.lead-list li{border-top:1px solid rgba(255,255,255,.14);padding:12px 0;margin:0;color:#DCE8DF}
+ul.lead-list li b{color:#A8E0B2;font-weight:500}ul.lead-list .note{display:block}
+ul.plain li{border-top:1px solid rgba(255,255,255,.14);padding:9px 0;margin:0;font-size:14.5px;color:#DCE8DF}
+.strips{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:8px 24px}
+.strip{display:grid;grid-template-columns:180px 1fr 300px;gap:20px;align-items:center;padding:16px 0;border-bottom:1px solid var(--line)}
 .strip:last-child{border-bottom:0}
-.sl{display:flex;justify-content:space-between;gap:8px}.sl span{font:800 20px var(--sans);font-variation-settings:"wdth" 70}
-.track{position:relative;height:28px;background:linear-gradient(90deg,var(--rule) 1px,transparent 1px) 0 0/25% 100%,linear-gradient(var(--rule2),var(--rule2)) 0 50%/100% 1px no-repeat}
+.sl{display:flex;justify-content:space-between;gap:8px}.sl b{font-weight:500}.sl span{font-size:20px;font-weight:400;letter-spacing:-.02em}
+.track{position:relative;height:30px}
+.track::before{content:"";position:absolute;left:0;right:0;top:50%;height:8px;transform:translateY(-50%);border-radius:999px;background:var(--mint)}
 .track i{position:absolute;top:50%;transform:translate(-50%,-50%)}
-.track .dot{width:10px;height:10px;border-radius:50%;background:var(--sheet);border:1.5px solid var(--ink3)}
-.track .med{width:2px;height:22px;background:var(--ink3)}
-.track .you{width:5px;height:28px;background:var(--ink);border-radius:1px}
-.sr{display:flex;flex-direction:column;gap:2px;font-size:13.5px;color:var(--ink3)}
-table.matrix{min-width:860px}
-table.matrix td,table.matrix th{padding:8px 12px}
+.track .dot{width:12px;height:12px;border-radius:50%;background:var(--bg);border:2px solid var(--leaf2)}
+.track .med{width:2px;height:22px;background:var(--ink3);border-radius:2px}
+.track .you{width:18px;height:18px;border-radius:50%;background:var(--btn);box-shadow:0 0 0 4px rgba(198,232,207,.18)}
+.sr{display:flex;flex-direction:column;gap:4px;font-size:13.5px;color:var(--ink3);align-items:flex-start}
+table.matrix{min-width:860px}table.matrix td,table.matrix th{padding:9px 12px}
 table.matrix td.num,table.matrix td:first-child{white-space:nowrap}
-th.c,td.c{text-align:center}
-th.you,td.you{background:#F1F5F3}
-tr.grp td{background:var(--paper);font-weight:700;font-size:13px;color:var(--ink);padding:7px 12px;border-bottom:1px solid var(--rule2)}
-.mk{display:inline-block;width:13px;height:13px;border-radius:2px;vertical-align:-2px;margin:0 3px}
-.mk.disclosed{background:var(--spruce)}
-.mk.partial{background:linear-gradient(135deg,var(--ochre) 50%,transparent 50%);border:1.5px solid var(--ochre)}
-.mk.missing{border:1.5px solid var(--rule2)}
-td.best{font-weight:750;color:var(--spruce)}
-sup{font-size:10.5px;color:var(--ink3);margin-left:3px;font-weight:600}
-details.panel{margin-top:22px}
-details summary{cursor:pointer;font-weight:650}
-details[open] summary{margin-bottom:10px}
+th.c,td.c{text-align:center}th.you,td.you{background:var(--hover)}
+tr.grp td{background:var(--card2);font-weight:500;font-size:13px;color:var(--ink);padding:8px 12px}
+.mk{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin:0 3px}
+.mk.disclosed{background:var(--leaf)}
+.mk.partial{background:linear-gradient(90deg,var(--ochre) 50%,var(--ochre-bg) 50%);box-shadow:inset 0 0 0 1.5px var(--ochre)}
+.mk.missing{box-shadow:inset 0 0 0 1.5px var(--line2)}
+td.best{font-weight:600;color:var(--good)}
+sup{font-size:10.5px;color:var(--ink3);margin-left:3px;font-weight:500}
+details.panel{margin-top:22px}details summary{cursor:pointer;font-weight:500}details[open] summary{margin-bottom:10px}
 .fw{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 .cmp{display:grid;grid-template-columns:auto 1fr auto;gap:8px 12px;align-items:center;font-size:13.5px;margin:6px 0 14px}
-.cmp b{font-variant-numeric:tabular-nums}
-table.mini{min-width:0;font-size:13.5px}
-table.mini td{padding:5px 0;border-bottom:1px solid var(--rule)}
-table.mini td.num{text-align:right}
-ol.qs{background:var(--sheet);border:1px solid var(--rule);border-radius:var(--r);padding:12px 22px 12px 44px}
-ol.qs li{font-family:var(--serif);font-size:16px;padding:6px 0;color:var(--ink)}
+table.mini{min-width:0;font-size:13.5px}table.mini td{padding:6px 0;border-bottom:1px solid var(--line)}table.mini td.num{text-align:right}
+ol.qs{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:14px 24px 14px 46px}
+ol.qs li{font-size:16px;padding:7px 0;color:var(--ink)}
+.wins{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:-2px 0 14px}
+.wins div{background:var(--card);border:1px solid var(--line);border-radius:var(--r3);padding:12px 16px;font-size:13.5px;color:var(--ink3)}
+.wins div.on{border-color:var(--leaf);background:var(--hover)}
+.wins b{display:block;color:var(--ink);font-size:18px;font-weight:500}
 
 /* splash + welcome */
-#splash{position:fixed;inset:0;z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:var(--paper);transition:opacity .5s var(--ez),visibility .5s}
+#splash{position:fixed;inset:0;z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  background:radial-gradient(80% 60% at 50% 40%,#173A2A,#0A1712);transition:opacity .5s var(--ez),visibility .5s}
 #splash.out{opacity:0;visibility:hidden}
-#splash svg{width:56px;height:56px}
+#splash svg{width:58px;height:58px}
 #splash .lf1{transform-origin:32px 38px;animation:leaf .9s var(--ez) both}#splash .lf2{transform-origin:32px 44px;animation:leaf .9s .18s var(--ez) both}
 #splash .stem{stroke-dasharray:24;stroke-dashoffset:24;animation:stem .5s var(--ez) forwards}
-#splash .nm{font:800 26px var(--sans);font-variation-settings:"wdth" 70;letter-spacing:.01em}
-#splash .ld{width:200px;height:2px;background:var(--rule);overflow:hidden}#splash .ld div{height:100%;width:0;background:var(--ink);animation:load 1.5s var(--ez) forwards}
+#splash .nm{font:500 24px var(--font);letter-spacing:-.02em}
+#splash .ld{width:180px;height:4px;border-radius:999px;background:rgba(220,240,226,.1);overflow:hidden}#splash .ld div{height:100%;width:0;background:var(--leaf);border-radius:999px;animation:load 1.5s var(--ez) forwards}
 #splash .sm{color:var(--ink3);font-size:13.5px;min-height:20px}
-.welcome{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(30,42,38,.45);animation:fade .25s both}
-.welcome .card{max-width:700px;width:100%;max-height:90vh;overflow:auto;padding:30px 32px;border-top:3px solid var(--ink);box-shadow:0 30px 80px -30px rgba(0,0,0,.5)}
-.welcome .hello{font-size:14px;color:var(--ink3);margin:0 0 6px}
-.welcome h2{font-size:clamp(30px,4.6vw,44px);font-weight:800;font-variation-settings:"wdth" 68;margin:0 0 12px}
-.steps{list-style:none;padding:0;margin:22px 0;counter-reset:w}
-.step{display:grid;grid-template-columns:34px 1fr;gap:12px;padding:12px 0;border-top:1px solid var(--rule);margin:0;counter-increment:w}
-.step::before{content:counter(w);font:800 24px/1 var(--sans);font-variation-settings:"wdth" 70;color:var(--spruce)}
-.step h3{font-size:15.5px;margin:0 0 3px}.step p{font-family:var(--serif);font-size:15px;color:var(--ink2);margin:0}
+.welcome{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(3,10,7,.6);backdrop-filter:blur(6px);animation:fade .25s both}
+.welcome .card{max-width:680px;width:100%;max-height:90vh;overflow:auto;padding:32px;border-radius:var(--r1);box-shadow:0 30px 80px -30px rgba(0,0,0,.5)}
+.welcome .hello{font-size:14px;color:var(--leaf);font-weight:500;margin:0 0 6px}
+.welcome h2{font-size:clamp(28px,4vw,40px);margin:0 0 12px}
+.steps{list-style:none;padding:0;margin:22px 0;counter-reset:w;display:grid;gap:8px}
+.step{display:grid;grid-template-columns:36px 1fr;gap:14px;padding:14px 16px;border-radius:var(--r3);background:var(--card2);margin:0;counter-increment:w}
+.step::before{content:counter(w);display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--mint2);color:var(--leaf);font-weight:500;font-size:14px}
+.step h3{font-size:15.5px;margin:4px 0 3px;font-weight:500}.step p{font-size:14.5px;color:var(--ink2);margin:0}
 .wfoot{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .wfoot label{color:var(--ink3);font-size:13.5px;display:flex;gap:6px;align-items:center;margin-left:auto;cursor:pointer}
 
 @keyframes fade{from{opacity:0}to{opacity:1}}
 @keyframes leaf{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:none}}
 @keyframes stem{to{stroke-dashoffset:0}}@keyframes load{to{width:100%}}
-@keyframes blink{50%{background:var(--spruce)}}
-@media(max-width:900px){.hero{grid-template-columns:1fr}.offer{grid-template-columns:1fr 1fr;gap:18px 24px}.how{grid-template-columns:1fr}.how li{border-left:0;border-top:1px solid var(--rule)}.how li:first-child{border-top:0}
-  .twocol,.fw,.pillars{grid-template-columns:1fr}.pillars{gap:16px}.strip{grid-template-columns:1fr;gap:8px}.rephead{grid-template-columns:1fr}.cov{text-align:left}}
-@media(max-width:560px){.offer{grid-template-columns:1fr}header{padding:10px 14px}nav button{padding:6px 8px;font-size:13.5px}main{padding:24px 14px 48px}}
+@keyframes pulse{50%{background:var(--leaf)}}
+@media(max-width:980px){nav{order:3;width:100%;justify-content:center}header{border-radius:var(--r2);flex-wrap:wrap;padding:10px 14px}.hdr-cta{margin-left:auto}}
+@media(max-width:900px){.intro,.feat3{grid-template-columns:1fr}.how{grid-template-columns:1fr 1fr}.twocol,.fw,.pillars,.wins{grid-template-columns:1fr}
+  .strip{grid-template-columns:1fr;gap:8px}.rephead{grid-template-columns:1fr}.cov{text-align:left}.doc{display:none}}
+@media(max-width:560px){.how{grid-template-columns:1fr}main{padding:20px 10px 48px}nav button{padding:6px 9px;font-size:13.5px}.hero{padding-top:44px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}#splash .ld div{width:100%}#splash .stem{stroke-dashoffset:0}}
+select option,select optgroup{background:#10221A;color:#E9F2EC}
+::selection{background:rgba(124,203,147,.3)}
 </style></head><body>
-<div id="splash" role="status" aria-label="Loading ESG Intelligence"><svg viewBox="0 0 64 64" aria-hidden="true"><path class="stem" d="M32 50V27" stroke="#1F5C4A" stroke-width="4" stroke-linecap="round" fill="none"/><path class="lf1" d="M32 38C22 38 16 32 16 21C27 21 34 27 32 38Z" fill="#1F5C4A"/><path class="lf2" d="M32 44C42 44 48 38 48 27C37 27 30 33 32 44Z" fill="#6E9B86"/></svg>
+<div id="splash" role="status" aria-label="Loading ESG Intelligence"><svg viewBox="0 0 64 64" aria-hidden="true"><path class="stem" d="M32 50V27" stroke="#7CCB93" stroke-width="4" stroke-linecap="round" fill="none"/><path class="lf1" d="M32 38C22 38 16 32 16 21C27 21 34 27 32 38Z" fill="#7CCB93"/><path class="lf2" d="M32 44C42 44 48 38 48 27C37 27 30 33 32 44Z" fill="#C6E8CF"/></svg>
 <div class="nm">ESG Intelligence</div><div class="ld"><div></div></div><div class="sm" id="splashMsg">Loading the ESG taxonomy…</div></div>
 <div id="welcome"></div>
-<header><button class="logo" onclick="go('home')" aria-label="ESG Intelligence home"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 52V27" stroke="#1F5C4A" stroke-width="5" stroke-linecap="round" fill="none"/><path d="M32 38C22 38 15 32 15 20C27 20 34 27 32 38Z" fill="#1F5C4A"/><path d="M32 45C42 45 49 39 49 27C37 27 30 33 32 45Z" fill="#6E9B86"/></svg>ESG Intelligence</button><nav id="nav"></nav></header>
+<header><button class="logo" onclick="go('home')" aria-label="ESG Intelligence home"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 54V28" stroke="#7CCB93" stroke-width="5" stroke-linecap="round" fill="none"/><path d="M32 38C21 38 14 31 14 19C26 19 34 26 32 38Z" fill="#7CCB93"/><path d="M32 45C43 45 50 38 50 26C38 26 30 33 32 45Z" fill="#C6E8CF"/></svg>ESG Intelligence</button><nav id="nav"></nav><button class="btn primary sm hdr-cta" onclick="go('analysis')">Analyse a report</button></header>
 <main id="app"></main>
-<footer><p>A research prototype. It does not give ESG ratings, assurance opinions, investment advice or compliance decisions; check every figure against the cited page.</p><p>© 2026 Ujwal Raj K.P. All rights reserved. Designed and developed by Ujwal Raj K.P.</p></footer>
+<footer><p><b>ESG Intelligence</b> is a research prototype. It does not give ESG ratings, assurance opinions, investment advice or compliance decisions; check every figure against the cited page.</p><p>© 2026 Ujwal Raj K.P. All rights reserved.<br>Designed and developed by Ujwal Raj K.P.</p></footer>
 <div id="modal"></div>
 <script>
 const $=s=>document.querySelector(s);
@@ -495,23 +504,46 @@ function closeModal(){$('#modal').innerHTML=''}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();$('#welcome').innerHTML&&closeWelcome()}});
 const tagCls=x=>String(x).split(' ')[0].replace(/[^a-zA-Z0-9_-]/g,'');
 function ind(l){const n=l.filter(x=>x.status==='Found'&&x.confidence!=='Low').length,r=n/l.length;return n===0?'Not found':r>=.7?'Strong disclosure':r>=.4?'Moderate disclosure':'Limited disclosure'}
-function home(){return`<section class="hero"><div>
-<h1>ESG analysis you can trace back to the page.</h1>
-<p class="sub">Upload a sustainability report, BRSR or annual report. The agent extracts 30 ESG topics, checks every quote against the PDF, benchmarks the company against its industry peers and compares the report with the news.</p>
-<div class="cta"><button class="btn primary" onclick="go('analysis')">Analyse a report</button><button class="btn s" onclick="loadDemo()">Open the demo</button><button class="btn s" onclick="showWelcome()">How to use it</button></div></div>
-<figure class="slip" aria-label="Sample findings from the demo analysis">
-<div class="sh"><b>Meridian Components</b><span>FY2025 sustainability report</span></div>
-<div class="row"><span class="t">Scope 1 emissions</span><span class="v">12,450 tCO2e</span><div class="mg"><span class="pg">p.18</span><br><span class="tick">✓</span> Quote found in the PDF</div></div>
-<div class="row"><span class="t">Renewable share of electricity</span><span class="v">34%</span><div class="mg"><span class="pg">p.21</span><br>Rank 4 of 5 peers</div></div>
-<div class="row"><span class="t">Scope 3 emissions</span><span class="v neg">Not disclosed</span><div class="mg">All 4 industry peers disclose it</div></div>
-<figcaption>From the demo: a fictional company with synthetic peers.</figcaption></figure></section>
-<div class="offer">
-<div><h3>Evidence for every figure</h3><p>Each metric carries its page and the exact quote, and anything the PDF does not contain is rejected before you see it.</p></div>
-<div><h3>Industry benchmark</h3><p>See where the company lags, which peers disclose more, and how each pillar ranks on the same scope and frameworks.</p></div>
-<div><h3>Disclosure gaps</h3><p>Missing and weakly supported topics, mapped to GRI, BRSR and TCFD, with questions to put to the company.</p></div>
-<div><h3>News against claims</h3><p>Recent controversies scored by severity and evidence stage, lined up against what the report says.</p></div></div>
+function home(){return`<section class="hero">
+<svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 54V28" stroke="#7CCB93" stroke-width="5" stroke-linecap="round" fill="none"/><path d="M32 38C21 38 14 31 14 19C26 19 34 26 32 38Z" fill="#7CCB93"/><path d="M32 45C43 45 50 38 50 26C38 26 30 33 32 45Z" fill="#C6E8CF"/></svg>
+<h1>Sustainability claims, checked at the source</h1>
+<p class="sub">An ESG agent that reads company reports, verifies every figure against the PDF, benchmarks industry peers and tracks controversies.</p>
+<div class="cta"><button class="btn primary" onclick="go('analysis')">Analyse a report</button><button class="btn" onclick="loadDemo()">Open the demo</button></div>
+<div class="meadow" aria-hidden="true"><div class="back"></div>
+<div class="doc d1"><b>✓ p.18 verified</b><i class="g"></i><i></i><i class="w"></i><i></i><i class="w"></i></div>
+<div class="doc d2"><b>✓ BRSR</b><i></i><i class="g"></i><i class="w"></i><i></i><i></i></div>
+<div class="front"></div></div></section>
+<section class="intro"><div><h2>What is ESG Intelligence?</h2><button class="btn primary" onclick="showWelcome()">See how it works</button></div>
+<p>A research tool for ESG analysts. It turns long sustainability, BRSR and annual reports into evidence you can check, shows where a company falls behind its industry, and compares what it says with what the news reports.</p></section>
+<section class="feat3">
+<div class="fc light"><h3>Evidence for every figure</h3><p>Each metric carries its page and the exact quote. Anything the PDF does not contain is rejected before you see it.</p>
+<svg class="art" viewBox="0 0 300 300" preserveAspectRatio="xMaxYMax meet" aria-hidden="true">
+<g transform="translate(150 120) rotate(8)"><rect x="-52" y="-66" width="104" height="138" rx="12" fill="#fff" stroke="#DCE4D9"/><rect x="-36" y="-46" width="58" height="7" rx="4" fill="#D2E6CC"/><rect x="-36" y="-30" width="72" height="6" rx="3" fill="#E4ECE1"/><rect x="-36" y="-18" width="50" height="6" rx="3" fill="#E4ECE1"/><rect x="-36" y="-6" width="66" height="6" rx="3" fill="#E4ECE1"/><circle cx="26" cy="38" r="15" fill="#3F7D4E"/><path d="M19 38l5 5 9-10" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
+<path d="M200 300 C 196 250 214 210 206 168" stroke="#2F6B40" stroke-width="4" fill="none" stroke-linecap="round"/>
+<path d="M206 196 C 180 192 166 176 164 156 C 188 158 204 172 206 196Z" fill="#5E9A68"/><path d="M207 178 C 230 172 242 154 242 134 C 220 138 206 154 207 178Z" fill="#3F7D4E"/><path d="M206 168 C 200 146 206 128 222 118 C 228 138 222 156 206 168Z" fill="#7FB07F"/>
+</svg><div class="fc-meadow"></div></div>
+<div class="fc dark"><h3>Benchmarked against peers</h3><p>See where the company lags, which industry peers disclose more, and how each pillar ranks on the same 30 topics.</p></div>
+<div class="fc dark"><h3>News against claims</h3><p>Controversies from the last 30 to 180 days, scored by severity and evidence stage, lined up with the report.</p></div></section>
+<div class="strip-logos"><p>Topics mapped to the frameworks analysts already use.</p><span>GRI Standards</span><span>SEBI BRSR</span><span>TCFD</span><span>61 listed companies</span><span>30 ESG topics</span></div>
 <h2>How the agent works</h2>
 <ol class="how"><li><b>Read</b>Extracts the text with page numbers.</li><li><b>Retrieve</b>Finds the passages for each of 30 ESG topics.</li><li><b>Extract</b>The model reports values with verbatim quotes.</li><li><b>Validate</b>Code checks each quote exists on the cited page.</li><li><b>Compare</b>Benchmarks peers and checks the news.</li></ol>`}
+/* Procedural meadow: layered hills covered in leaves and small flowers (seeded, so it is the same on every visit). */
+function meadowSVG(w,h,layers,seed){let s=seed;const r=()=>(s=(s*16807)%2147483647)/2147483647;
+  const pal=[['#2E5F45','#356B4E','#28563F'],['#24513A','#2B5C42','#1F4834'],['#19412E','#1F4C36','#153A29'],['#0F2C1E','#143524','#0C2518']];
+  const fl=['#E8F4E2','#F5F1D6','#C6E8CF','#F1DE9E','#FFFFFF'];let out='';
+  for(const L of layers){const base=h*[0.30,0.46,0.6,0.74][L],pts=[];
+    for(let x=0;x<=w;x+=16)pts.push([x,base-Math.sin(x/w*Math.PI*(1.1+L*.35)+L*1.7)*h*.09-Math.sin(x/w*Math.PI*3.2+L*2.3)*h*.035]);
+    const yAt=x=>{const i=Math.min(pts.length-2,Math.floor(x/16)),t=(x-pts[i][0])/16;return pts[i][1]*(1-t)+pts[i+1][1]*t};
+    out+=`<path d="M0,${h} L${pts.map(p=>p[0]+','+p[1].toFixed(1)).join(' L')} L${w},${h} Z" fill="${pal[L][0]}"/>`;
+    const n=420+L*170;
+    for(let i=0;i<n;i++){const x=r()*w,top=yAt(x),y=top-4+Math.pow(r(),1.7)*(h-top+8),c=pal[L][Math.floor(r()*3)],rx=2.2+r()*3.2+L*1.1,ry=rx*(.38+r()*.3);
+      out+=`<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="${rx.toFixed(1)}" ry="${ry.toFixed(1)}" fill="${c}" transform="rotate(${(r()*180).toFixed(0)} ${x.toFixed(1)} ${y.toFixed(1)})"/>`}
+    for(let i=0;i<n/5;i++){const x=r()*w,top=yAt(x),y=top+Math.pow(r(),2.4)*(h-top)*.7,rad=1+r()*(1.4+L*.5);
+      out+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${rad.toFixed(1)}" fill="${fl[Math.floor(r()*fl.length)]}"/>`}}
+  return`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMax slice">${out}</svg>`}
+function drawMeadows(){const b=document.querySelector('.meadow .back'),f=document.querySelector('.meadow .front');
+  if(b&&!b.firstChild){b.innerHTML=meadowSVG(1200,380,[0,1,2],11);f.innerHTML=meadowSVG(1200,380,[3],29)}
+  const m=document.querySelector('.fc-meadow');if(m&&!m.firstChild)m.innerHTML=meadowSVG(900,120,[2,3],5)}
 function upload(){
   return companySearch()+`
     <h2>Or upload a report</h2>
@@ -589,7 +621,7 @@ function pipeline(){return`<div class="card reveal" style="margin-top:16px"><div
 function list(title,items){return`<div class="card"><h3>${esc(title)}</h3>${items&&items.length?`<ul>${items.map(x=>`<li>${esc(typeof x==='string'?x:x.topic||JSON.stringify(x))}</li>`).join('')}</ul>`:'<p>Nothing identified.</p>'}</div>`}
 
 /* ---------- Controversy Watch: news monitoring + say-do check ---------- */
-const DEMO_WATCH={"company":"Meridian Components Ltd (fictional)","risk":{"overall":46,"band":"Elevated","E":33,"S":35,"G":16},"incidents":[{"id":"INC-01","pillar":"E","sub":"Pollution","stories":[{"headline":"Demo: Pollution board opens probe into effluent discharge at Meridian plant","url":null,"publisher":"Demo Newswire (synthetic)","date":"","stage":"investigation","factors":{"magnitude":58,"scale":52,"regulatory":68,"reputational":64,"financial":48,"recurrence":12,"credibility":60},"severity":50,"confidence":56,"summary":"Synthetic demo scenario, not a real event.","rationale":"Keyword rules matched pollution and stage wording for \"under investigation\". Rule-based estimate, not an AI reading.","classifier":"rules","ago":62},{"headline":"Demo: Pollution board fined Meridian over effluent discharge","url":null,"publisher":"Demo Newswire (synthetic)","date":"","stage":"confirmed","factors":{"magnitude":68,"scale":62,"regulatory":78,"reputational":74,"financial":58,"recurrence":12,"credibility":60},"severity":63,"confidence":56,"summary":"Synthetic demo scenario, not a real event.","rationale":"Keyword rules matched pollution and stage wording for \"confirmed violation\". Rule-based estimate, not an AI reading.","classifier":"rules","ago":38}],"stage":"confirmed","severity":63,"band":"High","ago":38},{"id":"INC-02","pillar":"S","sub":"Employee safety","stories":[{"headline":"Demo: Worker injured at Meridian unit, safety inquiry ordered","url":null,"publisher":"Demo Regional Desk (synthetic)","date":"","stage":"investigation","factors":{"magnitude":58,"scale":52,"regulatory":68,"reputational":64,"financial":48,"recurrence":12,"credibility":60},"severity":50,"confidence":50,"summary":"Synthetic demo scenario, not a real event.","rationale":"Keyword rules matched employee safety and stage wording for \"under investigation\". Rule-based estimate, not an AI reading.","classifier":"rules","ago":21}],"stage":"investigation","severity":50,"band":"Elevated","ago":21},{"id":"INC-03","pillar":"E","sub":"Renewable energy","stories":[{"headline":"Demo: Complaint calls Meridian renewable claims greenwashing","url":null,"publisher":"Demo Business Daily (synthetic)","date":"","stage":"allegation","factors":{"magnitude":48,"scale":42,"regulatory":36,"reputational":54,"financial":38,"recurrence":38,"credibility":60},"severity":35,"confidence":50,"summary":"Synthetic demo scenario, not a real event.","rationale":"Keyword rules matched renewable energy and stage wording for \"allegation\". Rule-based estimate, not an AI reading.","classifier":"rules","ago":14}],"stage":"allegation","severity":35,"band":"Moderate","ago":14},{"id":"INC-05","pillar":"S","sub":"Human rights","stories":[{"headline":"Demo: NGO report alleges forced labour concerns at a Meridian supplier","url":null,"publisher":"Demo Regional Desk (synthetic)","date":"","stage":"allegation","factors":{"magnitude":48,"scale":42,"regulatory":36,"reputational":54,"financial":38,"recurrence":38,"credibility":60},"severity":35,"confidence":44,"summary":"Synthetic demo scenario, not a real event.","rationale":"Keyword rules matched human rights and stage wording for \"allegation\". Rule-based estimate, not an AI reading.","classifier":"rules","ago":5}],"stage":"allegation","severity":35,"band":"Moderate","ago":5},{"id":"INC-04","pillar":"G","sub":"Data privacy","stories":[{"headline":"Demo: Customer data breach reported at Meridian; regulator seeks incident report","url":null,"publisher":"Demo Business Daily (synthetic)","date":"","stage":"allegation","factors":{"magnitude":48,"scale":42,"regulatory":36,"reputational":54,"financial":38,"recurrence":12,"credibility":60},"severity":33,"confidence":44,"summary":"Synthetic demo scenario, not a real event.","rationale":"Keyword rules matched data privacy and stage wording for \"allegation\". Rule-based estimate, not an AI reading.","classifier":"rules","ago":9}],"stage":"allegation","severity":33,"band":"Moderate","ago":9}],"signals":[{"type":"Regulatory exposure","weight":69,"title":"2 matters involving an authority","why":"Rule: latest report is at the investigation or confirmed stage. Matched INC-01, INC-02. An investigation is not a finding of fault."}],"say_do":[{"incident":"INC-05","pillar":"S","sub":"Human rights","stage":"allegation","severity":35,"headline":"Demo: NGO report alleges forced labour concerns at a Meridian supplier","flag":"Disclosure gap","note":"News coverage raises this issue, but the analysed report has no validated disclosure on the related topics. Worth asking the company about.","topics":[{"topic":"Human rights","status":"Not found","page":null,"value":""}]},{"incident":"INC-04","pillar":"G","sub":"Data privacy","stage":"allegation","severity":33,"headline":"Demo: Customer data breach reported at Meridian; regulator seeks incident report","flag":"Disclosure gap","note":"News coverage raises this issue, but the analysed report has no validated disclosure on the related topics. Worth asking the company about.","topics":[{"topic":"Data privacy","status":"Not found","page":null,"value":""}]},{"incident":"INC-01","pillar":"E","sub":"Pollution","stage":"confirmed","severity":63,"headline":"Demo: Pollution board fined Meridian over effluent discharge","flag":"Compare claims","note":"The report discloses related topics. Read the cited pages against the news coverage to see whether the two are consistent.","topics":[{"topic":"Waste","status":"Found","page":24,"value":"8,300 t generated; 71% recycled"},{"topic":"Water","status":"Found","page":23,"value":"1.9 million kL withdrawn"},{"topic":"Emissions reduction initiatives","status":"Found","page":22,"value":"Furnace efficiency programme at two plants"}]},{"incident":"INC-02","pillar":"S","sub":"Employee safety","stage":"investigation","severity":50,"headline":"Demo: Worker injured at Meridian unit, safety inquiry ordered","flag":"Compare claims","note":"The report discloses related topics. Read the cited pages against the news coverage to see whether the two are consistent.","topics":[{"topic":"Health & safety","status":"Found","page":30,"value":"LTIFR 0.41"},{"topic":"Workplace incidents","status":"Found","page":30,"value":"2 recordable incidents"}]},{"incident":"INC-03","pillar":"E","sub":"Renewable energy","stage":"allegation","severity":35,"headline":"Demo: Complaint calls Meridian renewable claims greenwashing","flag":"Compare claims","note":"The report discloses related topics. Read the cited pages against the news coverage to see whether the two are consistent.","topics":[{"topic":"Renewable energy","status":"Found","page":21,"value":"34% of electricity"},{"topic":"Energy consumption","status":"Found","page":20,"value":"412,000 GJ"}]}],"counts":{"articles":7,"relevant":6,"incidents":5},"days":90,"classifier":"rules","demo":true,"sources":["Synthetic demo data: no news source was queried"]};
+const DEMO_WATCH={"company":"Meridian Components Ltd (fictional)","risk":{"overall":46,"band":"Elevated","E":33,"S":35,"G":16},"incidents":[{"id":"INC-01","pillar":"E","sub":"Pollution","stories":[{"headline":"Demo: Pollution board opens probe into effluent discharge at Meridian plant","url":null,"publisher":"Demo Newswire (synthetic)","date":"","stage":"investigation","factors":{"magnitude":58,"scale":52,"regulatory":68,"reputational":64,"financial":48,"recurrence":12,"credibility":60},"severity":50,"confidence":56,"summary":"Synthetic demo scenario, not a real event.","rationale":"Keyword rules matched pollution and stage wording for \"under investigation\". Rule-based estimate, not an AI reading.","classifier":"rules","ago":62},{"headline":"Demo: Pollution board fined Meridian over effluent discharge","url":null,"publisher":"Demo Newswire (synthetic)","date":"","stage":"confirmed","factors":{"magnitude":68,"scale":62,"regulatory":78,"reputational":74,"financial":58,"recurrence":12,"credibility":60},"severity":63,"confidence":56,"summary":"Synthetic demo scenario, not a real event.","rationale":"Keyword rules matched pollution and stage wording for \"confirmed violation\". Rule-based estimate, not an AI reading.","classifier":"rules","ago":38}],"stage":"confirmed","severity":63,"band":"High","ago":38},{"id":"INC-02","pillar":"S","sub":"Employee safety","stories":[{"headline":"Demo: Worker injured at Meridian unit, safety inquiry ordered","url":null,"publisher":"Demo Regional Desk (synthetic)","date":"","stage":"investigation","factors":{"magnitude":58,"scale":52,"regulatory":68,"reputational":64,"financial":48,"recurrence":12,"credibility":60},"severity":50,"confidence":50,"summary":"Synthetic demo scenario, not a real event.","rationale":"Keyword rules matched employee safety and stage wording for \"under investigation\". Rule-based estimate, not an AI reading.","classifier":"rules","ago":21}],"stage":"investigation","severity":50,"band":"Elevated","ago":21},{"id":"INC-03","pillar":"E","sub":"Renewable energy","stories":[{"headline":"Demo: Complaint calls Meridian renewable claims greenwashing","url":null,"publisher":"Demo Business Daily (synthetic)","date":"","stage":"allegation","factors":{"magnitude":48,"scale":42,"regulatory":36,"reputational":54,"financial":38,"recurrence":38,"credibility":60},"severity":35,"confidence":50,"summary":"Synthetic demo scenario, not a real event.","rationale":"Keyword rules matched renewable energy and stage wording for \"allegation\". Rule-based estimate, not an AI reading.","classifier":"rules","ago":14}],"stage":"allegation","severity":35,"band":"Moderate","ago":14},{"id":"INC-05","pillar":"S","sub":"Human rights","stories":[{"headline":"Demo: NGO report alleges forced labour concerns at a Meridian supplier","url":null,"publisher":"Demo Regional Desk (synthetic)","date":"","stage":"allegation","factors":{"magnitude":48,"scale":42,"regulatory":36,"reputational":54,"financial":38,"recurrence":38,"credibility":60},"severity":35,"confidence":44,"summary":"Synthetic demo scenario, not a real event.","rationale":"Keyword rules matched human rights and stage wording for \"allegation\". Rule-based estimate, not an AI reading.","classifier":"rules","ago":5}],"stage":"allegation","severity":35,"band":"Moderate","ago":5},{"id":"INC-04","pillar":"G","sub":"Data privacy","stories":[{"headline":"Demo: Customer data breach reported at Meridian; regulator seeks incident report","url":null,"publisher":"Demo Business Daily (synthetic)","date":"","stage":"allegation","factors":{"magnitude":48,"scale":42,"regulatory":36,"reputational":54,"financial":38,"recurrence":12,"credibility":60},"severity":33,"confidence":44,"summary":"Synthetic demo scenario, not a real event.","rationale":"Keyword rules matched data privacy and stage wording for \"allegation\". Rule-based estimate, not an AI reading.","classifier":"rules","ago":9}],"stage":"allegation","severity":33,"band":"Moderate","ago":9}],"signals":[{"type":"Regulatory exposure","weight":69,"title":"2 matters involving an authority","why":"Rule: latest report is at the investigation or confirmed stage. Matched INC-01, INC-02. An investigation is not a finding of fault."}],"say_do":[{"incident":"INC-05","pillar":"S","sub":"Human rights","stage":"allegation","severity":35,"headline":"Demo: NGO report alleges forced labour concerns at a Meridian supplier","flag":"Disclosure gap","note":"News coverage raises this issue, but the analysed report has no validated disclosure on the related topics. Worth asking the company about.","topics":[{"topic":"Human rights","status":"Not found","page":null,"value":""}]},{"incident":"INC-04","pillar":"G","sub":"Data privacy","stage":"allegation","severity":33,"headline":"Demo: Customer data breach reported at Meridian; regulator seeks incident report","flag":"Disclosure gap","note":"News coverage raises this issue, but the analysed report has no validated disclosure on the related topics. Worth asking the company about.","topics":[{"topic":"Data privacy","status":"Not found","page":null,"value":""}]},{"incident":"INC-01","pillar":"E","sub":"Pollution","stage":"confirmed","severity":63,"headline":"Demo: Pollution board fined Meridian over effluent discharge","flag":"Compare claims","note":"The report discloses related topics. Read the cited pages against the news coverage to see whether the two are consistent.","topics":[{"topic":"Waste","status":"Found","page":24,"value":"8,300 t generated; 71% recycled"},{"topic":"Water","status":"Found","page":23,"value":"1.9 million kL withdrawn"},{"topic":"Emissions reduction initiatives","status":"Found","page":22,"value":"Furnace efficiency programme at two plants"}]},{"incident":"INC-02","pillar":"S","sub":"Employee safety","stage":"investigation","severity":50,"headline":"Demo: Worker injured at Meridian unit, safety inquiry ordered","flag":"Compare claims","note":"The report discloses related topics. Read the cited pages against the news coverage to see whether the two are consistent.","topics":[{"topic":"Health & safety","status":"Found","page":30,"value":"LTIFR 0.41"},{"topic":"Workplace incidents","status":"Found","page":30,"value":"2 recordable incidents"}]},{"incident":"INC-03","pillar":"E","sub":"Renewable energy","stage":"allegation","severity":35,"headline":"Demo: Complaint calls Meridian renewable claims greenwashing","flag":"Compare claims","note":"The report discloses related topics. Read the cited pages against the news coverage to see whether the two are consistent.","topics":[{"topic":"Renewable energy","status":"Found","page":21,"value":"34% of electricity"},{"topic":"Energy consumption","status":"Found","page":20,"value":"412,000 GJ"}]}],"counts":{"articles":7,"relevant":6,"incidents":5},"days":90,"classifier":"rules","demo":true,"sources":["Synthetic demo data: no news source was queried"],"windows":{"30":{"articles":5,"relevant":4,"incidents":4},"90":{"articles":7,"relevant":6,"incidents":5},"180":{"articles":7,"relevant":6,"incidents":5}}};
 const dAgo=n=>new Date(Date.now()-n*864e5).toISOString().slice(0,10);
 DEMO_WATCH.incidents.forEach(i=>{i.stories.forEach(s=>s.date=dAgo(s.ago));i.first_date=i.stories[0].date;i.last_date=i.stories[i.stories.length-1].date});
 const PILLAR={E:'Environmental',S:'Social',G:'Governance'};
@@ -614,13 +646,15 @@ async function runWatch(){
 function demoWatch(){W={q:'',days:90,busy:false,err:'',res:DEMO_WATCH};render('page')}
 function riskCards(r){return`<div class="grid"><div class="card reveal"><div class="k">News risk score</div><b class="big" data-count="${r.risk.overall}">${r.risk.overall}</b> <span class="tag sev${bandOf(r.risk.overall)}">${esc(r.risk.band)}</span><p style="margin-top:8px;font-size:12.5px;color:var(--tm)">${r.counts.incidents} incident${r.counts.incidents===1?'':'s'} from ${r.counts.relevant} of ${r.counts.articles} headlines, last ${r.days} days</p></div>${['E','S','G'].map(p=>`<div class="card reveal"><div class="k">${PILLAR[p]}</div><b class="big" data-count="${r.risk[p]}">${r.risk[p]}</b><div class="meter"><div style="--w:${r.risk[p]}%"></div></div></div>`).join('')}</div>`}
 function incRows(r,key){return r.incidents.map((i,n)=>`<tr><td style="white-space:nowrap">${esc(i.id)}</td><td>${PILLAR[i.pillar]}<br><span style="color:var(--tm);font-size:12.5px">${esc(i.sub)}</span></td><td>${esc(i.stories[i.stories.length-1].headline)}</td><td>${esc(STAGE[i.stage]||i.stage)}</td><td>${sevTag(i.severity)}</td><td>${esc(i.last_date)}<br><a class="lnk" onclick="viewIncident('${key}',${n})">${i.stories.length} report${i.stories.length===1?'':'s'}, details</a></td></tr>`).join('')}
+function winRow(r){if(!r.windows)return'';
+  return`<div class="wins">${['30','90','180'].map(d=>{const w=r.windows[d];return`<div class="${+d===+r.days?'on':''}"><b>${w.incidents} incident${w.incidents===1?'':'s'}</b>Last ${d} days, from ${w.relevant} of ${w.articles} headlines</div>`}).join('')}</div>`}
 function watchRes(r,key){
   return`${r.demo?'<div class="banner reveal">Demo scan — synthetic headlines about a fictional company. Not real events.</div>':''}
-  ${riskCards(r)}
+  ${riskCards(r)}${winRow(r)}
   ${r.signals.length?`<h2 class="reveal">Signals</h2><div class="grid">${r.signals.map(s=>`<div class="card reveal"><div class="k">${esc(s.type)}</div><h3>${esc(s.title)}</h3><p>${esc(s.why)}</p></div>`).join('')}</div>`:''}
   <h2 class="reveal">Incidents</h2>
   ${r.incidents.length?`<div class="tw"><table><thead><tr><th>ID</th><th>Pillar</th><th>Latest headline</th><th>Evidence stage</th><th>Severity</th><th>Last report</th></tr></thead><tbody>${incRows(r,key)}</tbody></table></div>`:'<div class="card reveal"><p>No ESG controversy headlines naming this company were found in the period. That is an absence of matching coverage, not a clean bill of health.</p></div>'}
-  <p style="font-size:13px;color:var(--tm);margin-top:14px">Classifier: ${r.classifier==='llm'?'LLM reading of headlines':'keyword rules (labelled estimate, not an AI reading)'}, ${(r.sources||[]).map(esc).join(', ')}. Scores describe news coverage from headlines only. An allegation or investigation is not a finding of fault.</p>`}
+  <p style="font-size:13px;color:var(--tm);margin-top:14px">News is collected once for 180 days and each headline is classified once, so shorter windows are always part of longer ones. Classifier: ${r.classifier==='llm'?'AI reading of headlines':r.classifier==='mixed'?'AI reading, with keyword rules for headlines the AI could not process':'keyword rules (an estimate, not an AI reading)'}, ${(r.sources||[]).map(esc).join(', ')}. Scores describe news coverage from headlines only. An allegation or investigation is not a finding of fault.</p>`}
 function watch(){
   return`<h2 class="reveal" style="margin-top:0">Controversy Watch</h2>
   <div class="card reveal" style="margin-bottom:18px"><div class="k">News monitoring</div><h3 style="font-size:20px;margin-bottom:6px">Scan a company for ESG controversies</h3>
@@ -658,13 +692,13 @@ function render(mode){const v=S.view,app=$('#app');
   app.className=mode==='page'?'a-page':mode==='tab'?'a-tab':'';
   app.innerHTML={home,analysis,watch,method,about}[v]();
   if(mode){app.querySelectorAll('.reveal,tbody tr').forEach((el,i)=>el.style.setProperty('--i',i));mode==='page'&&countUp()}
-  bindDrop()}
+  bindDrop();drawMeadows()}
 function bindDrop(){const d=$('#drop'),fi=$('#fi');if(!d)return;
   const pick=f=>{if(!f)return;if(f.type!=='application/pdf'&&!/\.pdf$/i.test(f.name)){S.err='Only PDF files are supported.';render();return}runAnalysis(f)};
   fi.onchange=()=>pick(fi.files[0]);d.ondragover=e=>{e.preventDefault();d.classList.add('hv')};d.ondragleave=()=>d.classList.remove('hv');d.ondrop=e=>{e.preventDefault();pick(e.dataTransfer.files[0])}}
 /* ---------- Peer benchmark ---------- */
 const DEMO_BENCH={"status":"done","demo":true,"industry":"Industrials & infrastructure","target":"Meridian Components (fictional)","peers":[{"id":"arden","name":"Arden Industrial (fictional)","state":"ready","msg":"Synthetic demo peer","source_url":""},{"id":"kestrel","name":"Kestrel Engineering (fictional)","state":"ready","msg":"Synthetic demo peer","source_url":""},{"id":"northfield","name":"Northfield Systems (fictional)","state":"ready","msg":"Synthetic demo peer","source_url":""},{"id":"halvorsen","name":"Halvorsen Group (fictional)","state":"ready","msg":"Synthetic demo peer","source_url":""}],"result":{"target":{"id":"meridian","name":"Meridian Components (fictional)"},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","meta":{"year":"FY2025"}},{"id":"kestrel","name":"Kestrel Engineering (fictional)","meta":{"year":"FY2025"}},{"id":"northfield","name":"Northfield Systems (fictional)","meta":{"year":"FY2025"}},{"id":"halvorsen","name":"Halvorsen Group (fictional)","meta":{"year":"FY2025"}}],"topics":[{"topic":"Scope 1 emissions","cat":"Environmental","frameworks":{"GRI":"305-1","BRSR":"Principle 6","TCFD":"Metrics & targets"},"target":{"mark":"disclosed","value":"12,450 tCO2e","page":18},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":14},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"partial","value":"","page":null},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"missing","value":"","page":null},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":58}],"peer_rate":0.5,"position":"In line","leaders":["Arden Industrial (fictional)","Halvorsen Group (fictional)"]},{"topic":"Scope 2 emissions","cat":"Environmental","frameworks":{"GRI":"305-2","BRSR":"Principle 6","TCFD":"Metrics & targets"},"target":{"mark":"disclosed","value":"31,200 tCO2e (market-based)","page":18},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":54},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":65},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":67},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"missing","value":"","page":null}],"peer_rate":0.75,"position":"In line","leaders":["Arden Industrial (fictional)","Kestrel Engineering (fictional)","Northfield Systems (fictional)"]},{"topic":"Scope 3 emissions","cat":"Environmental","frameworks":{"GRI":"305-3","BRSR":"Principle 6","TCFD":"Metrics & targets"},"target":{"mark":"missing","value":"","page":null},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"disclosed","value":"214,000 tCO2e (categories 1, 4, 11)","page":72},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"disclosed","value":"Categories 1 and 4 only: 96,000 tCO2e","page":57},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"disclosed","value":"Screening completed; 180,000 tCO2e estimated","page":47},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":24}],"peer_rate":1.0,"position":"Lagging","leaders":["Arden Industrial (fictional)","Kestrel Engineering (fictional)","Northfield Systems (fictional)","Halvorsen Group (fictional)"]},{"topic":"Energy consumption","cat":"Environmental","frameworks":{"GRI":"302-1","BRSR":"Principle 6"},"target":{"mark":"disclosed","value":"412,000 GJ","page":20},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":61},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"missing","value":"","page":null},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"missing","value":"","page":null},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"missing","value":"","page":null}],"peer_rate":0.25,"position":"Leading","leaders":["Arden Industrial (fictional)"]},{"topic":"Renewable energy","cat":"Environmental","frameworks":{"GRI":"302-1","BRSR":"Principle 6"},"target":{"mark":"disclosed","value":"34% of electricity","page":21},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"disclosed","value":"61% of electricity","page":19},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"disclosed","value":"48% of electricity","page":86},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"disclosed","value":"22% of electricity","page":69},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"disclosed","value":"40% of electricity","page":26}],"peer_rate":1.0,"position":"In line","leaders":["Arden Industrial (fictional)","Kestrel Engineering (fictional)","Northfield Systems (fictional)","Halvorsen Group (fictional)"]},{"topic":"GHG emissions (total)","cat":"Environmental","frameworks":{"GRI":"305-4","BRSR":"Principle 6","TCFD":"Metrics & targets"},"target":{"mark":"disclosed","value":"43,650 tCO2e (Scope 1 and 2)","page":18},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":80},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":44},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"partial","value":"","page":null},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"missing","value":"","page":null}],"peer_rate":0.5,"position":"In line","leaders":["Arden Industrial (fictional)","Kestrel Engineering (fictional)"]},{"topic":"Water","cat":"Environmental","frameworks":{"GRI":"303-3","BRSR":"Principle 6"},"target":{"mark":"disclosed","value":"1.9 million kL withdrawn","page":23},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":88},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":58},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":54},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"missing","value":"","page":null}],"peer_rate":0.75,"position":"In line","leaders":["Arden Industrial (fictional)","Kestrel Engineering (fictional)","Northfield Systems (fictional)"]},{"topic":"Waste","cat":"Environmental","frameworks":{"GRI":"306-3","BRSR":"Principle 6"},"target":{"mark":"disclosed","value":"8,300 t generated; 71% recycled","page":24},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":82},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"missing","value":"","page":null},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":11},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":10}],"peer_rate":0.75,"position":"In line","leaders":["Arden Industrial (fictional)","Northfield Systems (fictional)","Halvorsen Group (fictional)"]},{"topic":"Biodiversity","cat":"Environmental","frameworks":{"GRI":"304-2","BRSR":"Principle 6"},"target":{"mark":"missing","value":"","page":null},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":13},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":43},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"partial","value":"","page":null},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"missing","value":"","page":null}],"peer_rate":0.5,"position":"Lagging","leaders":["Arden Industrial (fictional)","Kestrel Engineering (fictional)"]},{"topic":"Climate targets","cat":"Environmental","frameworks":{"GRI":"305-5","BRSR":"Principle 6","TCFD":"Metrics & targets"},"target":{"mark":"partial","value":"Reduction ambition referenced; no base year","page":6},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"disclosed","value":"42% cut in Scope 1+2 by 2030 vs FY2020 (SBTi validated)","page":25},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"disclosed","value":"30% intensity reduction by 2030","page":63},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"missing","value":"","page":null},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":63}],"peer_rate":0.75,"position":"Lagging","leaders":["Arden Industrial (fictional)","Kestrel Engineering (fictional)","Halvorsen Group (fictional)"]},{"topic":"Net-zero commitment","cat":"Environmental","frameworks":{"BRSR":"Principle 6","TCFD":"Strategy"},"target":{"mark":"partial","value":"Net-zero ambition; no dated target","page":6},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"disclosed","value":"Net zero by 2045","page":26},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"partial","value":"","page":null},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":29},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"partial","value":"","page":null}],"peer_rate":0.5,"position":"Lagging","leaders":["Arden Industrial (fictional)","Northfield Systems (fictional)"]},{"topic":"Emissions reduction initiatives","cat":"Environmental","frameworks":{"GRI":"305-5","BRSR":"Principle 6","TCFD":"Strategy"},"target":{"mark":"disclosed","value":"Furnace efficiency programme at two plants","page":22},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":79},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"missing","value":"","page":null},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":77},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":45}],"peer_rate":0.75,"position":"In line","leaders":["Arden Industrial (fictional)","Northfield Systems (fictional)","Halvorsen Group (fictional)"]},{"topic":"Employee diversity","cat":"Social","frameworks":{"GRI":"405-1","BRSR":"Section A"},"target":{"mark":"disclosed","value":"Women: 22% of workforce","page":27},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"disclosed","value":"Women: 27% of workforce","page":31},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"disclosed","value":"Women: 19% of workforce","page":37},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"disclosed","value":"Women: 15% of workforce","page":50},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"disclosed","value":"Women: 24% of workforce","page":83}],"peer_rate":1.0,"position":"In line","leaders":["Arden Industrial (fictional)","Kestrel Engineering (fictional)","Northfield Systems (fictional)","Halvorsen Group (fictional)"]},{"topic":"Health & safety","cat":"Social","frameworks":{"GRI":"403-9","BRSR":"Principle 3"},"target":{"mark":"disclosed","value":"LTIFR 0.41","page":30},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"disclosed","value":"LTIFR 0.22","page":81},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"disclosed","value":"LTIFR 0.35","page":30},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"disclosed","value":"LTIFR 0.58","page":86},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"disclosed","value":"LTIFR 0.47","page":77}],"peer_rate":1.0,"position":"In line","leaders":["Arden Industrial (fictional)","Kestrel Engineering (fictional)","Northfield Systems (fictional)","Halvorsen Group (fictional)"]},{"topic":"Training","cat":"Social","frameworks":{"GRI":"404-1","BRSR":"Principle 3"},"target":{"mark":"disclosed","value":"18 hours per employee","page":29},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"disclosed","value":"31 hours per employee","page":55},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"disclosed","value":"24 hours per employee","page":37},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"missing","value":"","page":null},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"disclosed","value":"12 hours per employee","page":24}],"peer_rate":0.75,"position":"In line","leaders":["Arden Industrial (fictional)","Kestrel Engineering (fictional)","Halvorsen Group (fictional)"]},{"topic":"Labour practices","cat":"Social","frameworks":{"GRI":"401-1","BRSR":"Principle 3"},"target":{"mark":"disclosed","value":"Attrition 11.2%","page":28},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":80},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":31},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"missing","value":"","page":null},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":66}],"peer_rate":0.75,"position":"In line","leaders":["Arden Industrial (fictional)","Kestrel Engineering (fictional)","Halvorsen Group (fictional)"]},{"topic":"Human rights","cat":"Social","frameworks":{"GRI":"2-23","BRSR":"Principle 5"},"target":{"mark":"missing","value":"","page":null},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":76},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"disclosed","value":"Supplier human rights assessments: 140 suppliers","page":8},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"missing","value":"","page":null},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"disclosed","value":"Human rights policy and due diligence covering own operations","page":74}],"peer_rate":0.75,"position":"Lagging","leaders":["Arden Industrial (fictional)","Kestrel Engineering (fictional)","Halvorsen Group (fictional)"]},{"topic":"Community initiatives","cat":"Social","frameworks":{"GRI":"413-1","BRSR":"Principle 8"},"target":{"mark":"disclosed","value":"CSR spend INR 14 crore","page":33},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":82},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":86},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":53},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":72}],"peer_rate":1.0,"position":"In line","leaders":["Arden Industrial (fictional)","Kestrel Engineering (fictional)","Northfield Systems (fictional)","Halvorsen Group (fictional)"]},{"topic":"Employee engagement","cat":"Social","frameworks":{"BRSR":"Principle 3"},"target":{"mark":"missing","value":"","page":null},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"missing","value":"","page":null},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":73},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"missing","value":"","page":null},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":73}],"peer_rate":0.5,"position":"Lagging","leaders":["Kestrel Engineering (fictional)","Halvorsen Group (fictional)"]},{"topic":"Workplace incidents","cat":"Social","frameworks":{"GRI":"403-9","BRSR":"Principle 3"},"target":{"mark":"disclosed","value":"2 recordable incidents","page":30},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"missing","value":"","page":null},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"missing","value":"","page":null},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"missing","value":"","page":null},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"missing","value":"","page":null}],"peer_rate":0.0,"position":"Leading","leaders":[]},{"topic":"Social impact","cat":"Social","frameworks":{"GRI":"413-1","BRSR":"Principle 8"},"target":{"mark":"missing","value":"","page":null},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":71},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"missing","value":"","page":null},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":52},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"missing","value":"","page":null}],"peer_rate":0.5,"position":"Lagging","leaders":["Arden Industrial (fictional)","Northfield Systems (fictional)"]},{"topic":"Board composition","cat":"Governance","frameworks":{"GRI":"2-9","BRSR":"Section B","TCFD":"Governance"},"target":{"mark":"disclosed","value":"4 of 9 directors independent","page":35},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"disclosed","value":"6 of 10 directors independent","page":65},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"disclosed","value":"5 of 8 directors independent","page":79},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"disclosed","value":"50% independent directors","page":52},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"disclosed","value":"3 of 7 directors independent","page":26}],"peer_rate":1.0,"position":"In line","leaders":["Arden Industrial (fictional)","Kestrel Engineering (fictional)","Northfield Systems (fictional)","Halvorsen Group (fictional)"]},{"topic":"Ethics","cat":"Governance","frameworks":{"GRI":"2-23","BRSR":"Principle 1"},"target":{"mark":"disclosed","value":"Code of conduct covers all employees","page":36},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":23},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":21},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"missing","value":"","page":null},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"missing","value":"","page":null}],"peer_rate":0.5,"position":"In line","leaders":["Arden Industrial (fictional)","Kestrel Engineering (fictional)"]},{"topic":"Anti-corruption","cat":"Governance","frameworks":{"GRI":"205-2","BRSR":"Principle 1"},"target":{"mark":"disclosed","value":"Anti-bribery training for 88% of staff","page":36},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":51},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":32},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":33},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"partial","value":"","page":null}],"peer_rate":0.75,"position":"In line","leaders":["Arden Industrial (fictional)","Kestrel Engineering (fictional)","Northfield Systems (fictional)"]},{"topic":"Risk management","cat":"Governance","frameworks":{"GRI":"2-12","BRSR":"Section A","TCFD":"Risk management"},"target":{"mark":"disclosed","value":"Enterprise risk framework overseen by Risk Committee","page":38},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":13},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":28},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":86},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"missing","value":"","page":null}],"peer_rate":0.75,"position":"In line","leaders":["Arden Industrial (fictional)","Kestrel Engineering (fictional)","Northfield Systems (fictional)"]},{"topic":"Data privacy","cat":"Governance","frameworks":{"GRI":"418-1","BRSR":"Principle 9"},"target":{"mark":"missing","value":"","page":null},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"disclosed","value":"ISO 27001 certified; no breaches","page":52},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":21},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"disclosed","value":"No substantiated privacy complaints","page":69},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"missing","value":"","page":null}],"peer_rate":0.75,"position":"Lagging","leaders":["Arden Industrial (fictional)","Kestrel Engineering (fictional)","Northfield Systems (fictional)"]},{"topic":"Whistleblower mechanism","cat":"Governance","frameworks":{"GRI":"2-26","BRSR":"Principle 1"},"target":{"mark":"disclosed","value":"Vigil mechanism in place","page":37},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":48},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":20},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"partial","value":"","page":null},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":13}],"peer_rate":0.75,"position":"In line","leaders":["Arden Industrial (fictional)","Kestrel Engineering (fictional)","Halvorsen Group (fictional)"]},{"topic":"ESG governance","cat":"Governance","frameworks":{"GRI":"2-13","BRSR":"Section B","TCFD":"Governance"},"target":{"mark":"missing","value":"","page":null},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"disclosed","value":"Board ESG committee","page":41},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"disclosed","value":"Board ESG committee","page":41},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"disclosed","value":"Board ESG committee","page":41},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"missing","value":"","page":null}],"peer_rate":0.75,"position":"Lagging","leaders":["Arden Industrial (fictional)","Kestrel Engineering (fictional)","Northfield Systems (fictional)"]},{"topic":"Sustainability oversight","cat":"Governance","frameworks":{"GRI":"2-12","BRSR":"Section B","TCFD":"Governance"},"target":{"mark":"missing","value":"","page":null},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":19},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":56},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"missing","value":"","page":null},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"missing","value":"","page":null}],"peer_rate":0.5,"position":"Lagging","leaders":["Arden Industrial (fictional)","Kestrel Engineering (fictional)"]},{"topic":"Policies","cat":"Governance","frameworks":{"GRI":"2-23","BRSR":"Section B"},"target":{"mark":"disclosed","value":"BRSR policies approved by the Board","page":39},"peers":[{"id":"arden","name":"Arden Industrial (fictional)","mark":"missing","value":"","page":null},{"id":"kestrel","name":"Kestrel Engineering (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":52},{"id":"northfield","name":"Northfield Systems (fictional)","mark":"disclosed","value":"Disclosed with supporting figures","page":89},{"id":"halvorsen","name":"Halvorsen Group (fictional)","mark":"missing","value":"","page":null}],"peer_rate":0.5,"position":"In line","leaders":["Kestrel Engineering (fictional)","Northfield Systems (fictional)"]}],"pillars":{"Environmental":{"target":67,"median":58,"best":{"name":"Arden Industrial (fictional)","value":100},"peers":[{"name":"Arden Industrial (fictional)","value":100},{"name":"Kestrel Engineering (fictional)","value":58},{"name":"Northfield Systems (fictional)","value":58},{"name":"Halvorsen Group (fictional)","value":50}],"rank":2,"of":5,"position":"In line"},"Social":{"target":67,"median":78,"best":{"name":"Arden Industrial (fictional)","value":78},"peers":[{"name":"Arden Industrial (fictional)","value":78},{"name":"Kestrel Engineering (fictional)","value":78},{"name":"Northfield Systems (fictional)","value":44},{"name":"Halvorsen Group (fictional)","value":78}],"rank":4,"of":5,"position":"Lagging"},"Governance":{"target":67,"median":78,"best":{"name":"Kestrel Engineering (fictional)","value":100},"peers":[{"name":"Arden Industrial (fictional)","value":89},{"name":"Kestrel Engineering (fictional)","value":100},{"name":"Northfield Systems (fictional)","value":67},{"name":"Halvorsen Group (fictional)","value":22}],"rank":3,"of":5,"position":"Lagging"},"Overall":{"target":67,"median":67,"best":{"name":"Arden Industrial (fictional)","value":90},"peers":[{"name":"Arden Industrial (fictional)","value":90},{"name":"Kestrel Engineering (fictional)","value":77},{"name":"Northfield Systems (fictional)","value":57},{"name":"Halvorsen Group (fictional)","value":50}],"rank":3,"of":5,"position":"In line"}},"kpis":[{"topic":"Renewable energy","label":"Renewable share of energy or electricity","unit":"%","higher_is_better":true,"rows":[{"name":"Meridian Components (fictional)","target":true,"value":34.0,"page":21,"rank":4},{"name":"Arden Industrial (fictional)","target":false,"value":61.0,"page":19,"rank":1},{"name":"Kestrel Engineering (fictional)","target":false,"value":48.0,"page":86,"rank":2},{"name":"Northfield Systems (fictional)","target":false,"value":22.0,"page":69,"rank":5},{"name":"Halvorsen Group (fictional)","target":false,"value":40.0,"page":26,"rank":3}],"leader":"Arden Industrial (fictional)","peer_median":44.0,"target_rank":4,"ranked":5},{"topic":"Employee diversity","label":"Women in the workforce","unit":"%","higher_is_better":true,"rows":[{"name":"Meridian Components (fictional)","target":true,"value":22.0,"page":27,"rank":3},{"name":"Arden Industrial (fictional)","target":false,"value":27.0,"page":31,"rank":1},{"name":"Kestrel Engineering (fictional)","target":false,"value":19.0,"page":37,"rank":4},{"name":"Northfield Systems (fictional)","target":false,"value":15.0,"page":50,"rank":5},{"name":"Halvorsen Group (fictional)","target":false,"value":24.0,"page":83,"rank":2}],"leader":"Arden Industrial (fictional)","peer_median":21.5,"target_rank":3,"ranked":5},{"topic":"Board composition","label":"Independent directors on the board","unit":"%","higher_is_better":true,"rows":[{"name":"Meridian Components (fictional)","target":true,"value":44.4,"page":35,"rank":4},{"name":"Arden Industrial (fictional)","target":false,"value":60.0,"page":65,"rank":2},{"name":"Kestrel Engineering (fictional)","target":false,"value":62.5,"page":79,"rank":1},{"name":"Northfield Systems (fictional)","target":false,"value":50.0,"page":52,"rank":3},{"name":"Halvorsen Group (fictional)","target":false,"value":42.9,"page":26,"rank":5}],"leader":"Kestrel Engineering (fictional)","peer_median":55.0,"target_rank":4,"ranked":5},{"topic":"Health & safety","label":"Lost-time injury frequency rate","unit":"LTIFR","higher_is_better":false,"rows":[{"name":"Meridian Components (fictional)","target":true,"value":0.41,"page":30,"rank":3},{"name":"Arden Industrial (fictional)","target":false,"value":0.22,"page":81,"rank":1},{"name":"Kestrel Engineering (fictional)","target":false,"value":0.35,"page":30,"rank":2},{"name":"Northfield Systems (fictional)","target":false,"value":0.58,"page":86,"rank":5},{"name":"Halvorsen Group (fictional)","target":false,"value":0.47,"page":77,"rank":4}],"leader":"Arden Industrial (fictional)","peer_median":0.41,"target_rank":3,"ranked":5},{"topic":"Training","label":"Training hours per employee","unit":"hours","higher_is_better":true,"rows":[{"name":"Meridian Components (fictional)","target":true,"value":18.0,"page":29,"rank":3},{"name":"Arden Industrial (fictional)","target":false,"value":31.0,"page":55,"rank":1},{"name":"Kestrel Engineering (fictional)","target":false,"value":24.0,"page":37,"rank":2},{"name":"Northfield Systems (fictional)","target":false,"value":null,"page":null},{"name":"Halvorsen Group (fictional)","target":false,"value":12.0,"page":24,"rank":4}],"leader":"Arden Industrial (fictional)","peer_median":24.0,"target_rank":3,"ranked":4}],"absolute":[{"topic":"Scope 1 emissions","rows":[{"name":"Meridian Components (fictional)","value":"12,450 tCO2e"},{"name":"Arden Industrial (fictional)","value":"Disclosed with supporting figures"},{"name":"Kestrel Engineering (fictional)","value":""},{"name":"Northfield Systems (fictional)","value":""},{"name":"Halvorsen Group (fictional)","value":"Disclosed with supporting figures"}]},{"topic":"Scope 2 emissions","rows":[{"name":"Meridian Components (fictional)","value":"31,200 tCO2e (market-based)"},{"name":"Arden Industrial (fictional)","value":"Disclosed with supporting figures"},{"name":"Kestrel Engineering (fictional)","value":"Disclosed with supporting figures"},{"name":"Northfield Systems (fictional)","value":"Disclosed with supporting figures"},{"name":"Halvorsen Group (fictional)","value":""}]},{"topic":"Scope 3 emissions","rows":[{"name":"Meridian Components (fictional)","value":""},{"name":"Arden Industrial (fictional)","value":"214,000 tCO2e (categories 1, 4, 11)"},{"name":"Kestrel Engineering (fictional)","value":"Categories 1 and 4 only: 96,000 tCO2e"},{"name":"Northfield Systems (fictional)","value":"Screening completed; 180,000 tCO2e estimated"},{"name":"Halvorsen Group (fictional)","value":"Disclosed with supporting figures"}]},{"topic":"Energy consumption","rows":[{"name":"Meridian Components (fictional)","value":"412,000 GJ"},{"name":"Arden Industrial (fictional)","value":"Disclosed with supporting figures"},{"name":"Kestrel Engineering (fictional)","value":""},{"name":"Northfield Systems (fictional)","value":""},{"name":"Halvorsen Group (fictional)","value":""}]},{"topic":"Water","rows":[{"name":"Meridian Components (fictional)","value":"1.9 million kL withdrawn"},{"name":"Arden Industrial (fictional)","value":"Disclosed with supporting figures"},{"name":"Kestrel Engineering (fictional)","value":"Disclosed with supporting figures"},{"name":"Northfield Systems (fictional)","value":"Disclosed with supporting figures"},{"name":"Halvorsen Group (fictional)","value":""}]},{"topic":"Waste","rows":[{"name":"Meridian Components (fictional)","value":"8,300 t generated; 71% recycled"},{"name":"Arden Industrial (fictional)","value":"Disclosed with supporting figures"},{"name":"Kestrel Engineering (fictional)","value":""},{"name":"Northfield Systems (fictional)","value":"Disclosed with supporting figures"},{"name":"Halvorsen Group (fictional)","value":"Disclosed with supporting figures"}]}],"frameworks":{"GRI":{"target":71,"peer_avg":70,"missing":["2-12 Sustainability oversight","2-13 ESG governance","2-23 Human rights","304-2 Biodiversity","305-3 Scope 3 emissions","305-5 Climate targets","413-1 Social impact","418-1 Data privacy"],"sections":[{"ref":"2-12","topics":["Risk management","Sustainability oversight"],"target":1,"total":2},{"ref":"2-13","topics":["ESG governance"],"target":0,"total":1},{"ref":"2-23","topics":["Human rights","Ethics","Policies"],"target":2,"total":3},{"ref":"2-26","topics":["Whistleblower mechanism"],"target":1,"total":1},{"ref":"2-9","topics":["Board composition"],"target":1,"total":1},{"ref":"205-2","topics":["Anti-corruption"],"target":1,"total":1},{"ref":"302-1","topics":["Energy consumption","Renewable energy"],"target":2,"total":2},{"ref":"303-3","topics":["Water"],"target":1,"total":1},{"ref":"304-2","topics":["Biodiversity"],"target":0,"total":1},{"ref":"305-1","topics":["Scope 1 emissions"],"target":1,"total":1},{"ref":"305-2","topics":["Scope 2 emissions"],"target":1,"total":1},{"ref":"305-3","topics":["Scope 3 emissions"],"target":0,"total":1},{"ref":"305-4","topics":["GHG emissions (total)"],"target":1,"total":1},{"ref":"305-5","topics":["Climate targets","Emissions reduction initiatives"],"target":1,"total":2},{"ref":"306-3","topics":["Waste"],"target":1,"total":1},{"ref":"401-1","topics":["Labour practices"],"target":1,"total":1},{"ref":"403-9","topics":["Health & safety","Workplace incidents"],"target":2,"total":2},{"ref":"404-1","topics":["Training"],"target":1,"total":1},{"ref":"405-1","topics":["Employee diversity"],"target":1,"total":1},{"ref":"413-1","topics":["Community initiatives","Social impact"],"target":1,"total":2},{"ref":"418-1","topics":["Data privacy"],"target":0,"total":1}]},"BRSR":{"target":67,"peer_avg":68,"missing":["Principle 3 Employee engagement","Principle 5 Human rights","Principle 6 Biodiversity","Principle 6 Climate targets","Principle 6 Net-zero commitment","Principle 6 Scope 3 emissions","Principle 8 Social impact","Principle 9 Data privacy","Section B ESG governance","Section B Sustainability oversight"],"sections":[{"ref":"Principle 1","topics":["Ethics","Anti-corruption","Whistleblower mechanism"],"target":3,"total":3},{"ref":"Principle 3","topics":["Health & safety","Training","Labour practices","Employee engagement","Workplace incidents"],"target":4,"total":5},{"ref":"Principle 5","topics":["Human rights"],"target":0,"total":1},{"ref":"Principle 6","topics":["Scope 1 emissions","Scope 2 emissions","Scope 3 emissions","Energy consumption","Renewable energy","GHG emissions (total)","Water","Waste","Biodiversity","Climate targets","Net-zero commitment","Emissions reduction initiatives"],"target":8,"total":12},{"ref":"Principle 8","topics":["Community initiatives","Social impact"],"target":1,"total":2},{"ref":"Principle 9","topics":["Data privacy"],"target":0,"total":1},{"ref":"Section A","topics":["Employee diversity","Risk management"],"target":2,"total":2},{"ref":"Section B","topics":["Board composition","ESG governance","Sustainability oversight","Policies"],"target":2,"total":4}]},"TCFD":{"target":55,"peer_avg":70,"missing":["Governance ESG governance","Governance Sustainability oversight","Metrics & targets Climate targets","Metrics & targets Scope 3 emissions","Strategy Net-zero commitment"],"sections":[{"ref":"Governance","topics":["Board composition","ESG governance","Sustainability oversight"],"target":1,"total":3},{"ref":"Metrics & targets","topics":["Scope 1 emissions","Scope 2 emissions","Scope 3 emissions","GHG emissions (total)","Climate targets"],"target":3,"total":5},{"ref":"Risk management","topics":["Risk management"],"target":1,"total":1},{"ref":"Strategy","topics":["Net-zero commitment","Emissions reduction initiatives"],"target":1,"total":2}]}},"brief":{"headline":"Meridian Components (fictional) discloses 67% of the 30 tracked topics with validated evidence, in line with the peer median of 67% (rank 3 of 5). The widest gap is in social (67% against 78%).","lagging":[{"topic":"Scope 3 emissions","cat":"Environmental","peer_rate":1.0,"who":[{"name":"Arden Industrial (fictional)","value":"214,000 tCO2e (categories 1, 4, 11)","page":72},{"name":"Kestrel Engineering (fictional)","value":"Categories 1 and 4 only: 96,000 tCO2e","page":57},{"name":"Northfield Systems (fictional)","value":"Screening completed; 180,000 tCO2e estimated","page":47},{"name":"Halvorsen Group (fictional)","value":"Disclosed with supporting figures","page":24}]},{"topic":"Climate targets","cat":"Environmental","peer_rate":0.75,"who":[{"name":"Arden Industrial (fictional)","value":"42% cut in Scope 1+2 by 2030 vs FY2020 (SBTi validated)","page":25},{"name":"Kestrel Engineering (fictional)","value":"30% intensity reduction by 2030","page":63},{"name":"Halvorsen Group (fictional)","value":"Disclosed with supporting figures","page":63}]},{"topic":"Human rights","cat":"Social","peer_rate":0.75,"who":[{"name":"Arden Industrial (fictional)","value":"Disclosed with supporting figures","page":76},{"name":"Kestrel Engineering (fictional)","value":"Supplier human rights assessments: 140 suppliers","page":8},{"name":"Halvorsen Group (fictional)","value":"Human rights policy and due diligence covering own operations","page":74}]},{"topic":"Data privacy","cat":"Governance","peer_rate":0.75,"who":[{"name":"Arden Industrial (fictional)","value":"ISO 27001 certified; no breaches","page":52},{"name":"Kestrel Engineering (fictional)","value":"Disclosed with supporting figures","page":21},{"name":"Northfield Systems (fictional)","value":"No substantiated privacy complaints","page":69}]},{"topic":"ESG governance","cat":"Governance","peer_rate":0.75,"who":[{"name":"Arden Industrial (fictional)","value":"Board ESG committee","page":41},{"name":"Kestrel Engineering (fictional)","value":"Board ESG committee","page":41},{"name":"Northfield Systems (fictional)","value":"Board ESG committee","page":41}]},{"topic":"Biodiversity","cat":"Environmental","peer_rate":0.5,"who":[{"name":"Arden Industrial (fictional)","value":"Disclosed with supporting figures","page":13},{"name":"Kestrel Engineering (fictional)","value":"Disclosed with supporting figures","page":43}]},{"topic":"Net-zero commitment","cat":"Environmental","peer_rate":0.5,"who":[{"name":"Arden Industrial (fictional)","value":"Net zero by 2045","page":26},{"name":"Northfield Systems (fictional)","value":"Disclosed with supporting figures","page":29}]},{"topic":"Employee engagement","cat":"Social","peer_rate":0.5,"who":[{"name":"Kestrel Engineering (fictional)","value":"Disclosed with supporting figures","page":73},{"name":"Halvorsen Group (fictional)","value":"Disclosed with supporting figures","page":73}]},{"topic":"Social impact","cat":"Social","peer_rate":0.5,"who":[{"name":"Arden Industrial (fictional)","value":"Disclosed with supporting figures","page":71},{"name":"Northfield Systems (fictional)","value":"Disclosed with supporting figures","page":52}]},{"topic":"Sustainability oversight","cat":"Governance","peer_rate":0.5,"who":[{"name":"Arden Industrial (fictional)","value":"Disclosed with supporting figures","page":19},{"name":"Kestrel Engineering (fictional)","value":"Disclosed with supporting figures","page":56}]}],"leading":[{"topic":"Workplace incidents","cat":"Social","peer_rate":0.0,"value":"2 recordable incidents","page":30},{"topic":"Energy consumption","cat":"Environmental","peer_rate":0.25,"value":"412,000 GJ","page":20}],"kpi_notes":["Renewable share of energy or electricity: 34%, rank 4 of 5 (higher is better; leader Arden Industrial (fictional)).","Women in the workforce: 22%, rank 3 of 5 (higher is better; leader Arden Industrial (fictional)).","Independent directors on the board: 44.4%, rank 4 of 5 (higher is better; leader Kestrel Engineering (fictional)).","Lost-time injury frequency rate: 0.41, rank 3 of 5 (lower is better; leader Arden Industrial (fictional)).","Training hours per employee: 18 hours, rank 3 of 4 (higher is better; leader Arden Industrial (fictional))."],"questions":["Will you disclose scope 3 emissions? 100% of peers do, for example Arden Industrial (fictional).","Will you disclose climate targets? 75% of peers do, for example Arden Industrial (fictional).","Will you disclose human rights? 75% of peers do, for example Arden Industrial (fictional).","Will you disclose data privacy? 75% of peers do, for example Arden Industrial (fictional).","Will you disclose ESG governance? 75% of peers do, for example Arden Industrial (fictional).","Can you provide verifiable data for climate targets? The report mentions it, but the evidence did not pass validation.","Can you provide verifiable data for net-zero commitment? The report mentions it, but the evidence did not pass validation."]}}};
-const POS={Lagging:'neg',Leading:'pos','In line':'mid','Behind some peers':'warn','Industry gap':'muted','No peers':'muted'};
+const POS={Lagging:'neg',Leading:'good','In line':'mid','Behind some peers':'warn','Industry gap':'muted','No peers':'muted'};
 const MARK={disclosed:'Disclosed with validated evidence',partial:'Mentioned, but the evidence did not pass validation',missing:'Not found in the report'};
 let bmPoll=null;
 const shortName=n=>String(n||'').replace(/\s*\(fictional\)/,'').replace(/ (Limited|Ltd\.?|Industries|Company|Corporation)$/,'');

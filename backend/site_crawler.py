@@ -47,7 +47,9 @@ SKIP_PATH = re.compile(r"/(careers?|jobs|news|press|media|blogs?|events?|login|s
                        re.I)
 GENERIC_ANCHORS = {"", "download", "pdf", "read more", "view", "click here", "here", "know more", "learn more",
                    "view report", "download pdf", "download report", "read", "open"}
-COMMON_PATHS = ("/sustainability", "/esg", "/investors", "/investor-relations", "/sustainability/reports")
+COMMON_PATHS = ("/sustainability", "/esg", "/investors", "/investor-relations", "/sustainability/reports",
+                "/sustainability-report", "/esg-reports", "/annual-reports", "/investors/annual-reports",
+                "/investor-relations/annual-reports", "/responsibility")
 
 
 class _Links(HTMLParser):
@@ -212,7 +214,10 @@ def crawl(company: dict, fetch=http_fetch, max_pages: int = 24, budget_s: float 
             queue[u] = page_priority(u)
     notes.append(f"sitemap: {len(pdfs)} report PDFs, {len(queue)} ESG/investor pages")
 
-    # 2. home page and common paths
+    # 2. official ESG pages from companies.json, then the home page and common paths
+    for u in company.get("pages", []):
+        if on_domains(u, domains):
+            queue[u] = 200
     for d in domains[:2]:
         root = f"https://{d}"
         queue.setdefault(root + "/", 100)

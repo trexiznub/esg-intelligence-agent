@@ -4,7 +4,7 @@
 
 **Compares what a company says about ESG with what is reported about it.**
 
-1. **Report discovery.** Pick one of 61 well-known Indian and global companies (`companies.json`) to find its ESG, sustainability, BRSR or annual report. The agent reads the company's own website (sitemap, sustainability and investor pages) to collect the report PDFs it links to, and also queries a web search engine; only official sources are kept, so other companies' pages never appear.
+1. **Report discovery.** Pick one of 61 well-known Indian and global companies (`companies.json`) to find its ESG, sustainability, BRSR or annual report. Verified links to official reports are listed first for 13 companies; for every company the agent also reads its official website (starting from its ESG pages, then the sitemap and investor pages) and queries a web search engine. Only official sources are kept, so other companies' pages never appear.
 2. **Disclosure analysis.** Upload a sustainability report, annual report or BRSR (PDF). An agentic pipeline extracts ESG metrics, checks every quote against the source PDF and lists disclosure gaps.
 3. **Peer benchmark.** Runs up to four industry peers through the same pipeline, so every company is judged on the same 30 topics, the same quote validation and the same framework mapping. It shows where the company lags and which peers do better (with their values and page references), how each pillar ranks, comparable metrics such as renewable share, women in the workforce, board independence and LTIFR, GRI / BRSR / TCFD alignment, and questions to put to the company.
 4. **Controversy Watch.** Scans recent news for the company, classifies each headline by ESG pillar and evidence stage, and scores severity with a transparent weighted model.
@@ -57,7 +57,7 @@ FastAPI (backend/main.py)
 
 ## Tech stack
 
-Python, FastAPI, PyMuPDF, Google Gemini API, ReportLab, vanilla JS/CSS frontend (Archivo and Source Serif 4), pytest, GitHub Actions.
+Python, FastAPI, PyMuPDF, Google Gemini API, ReportLab, vanilla JS/CSS frontend (Onest), pytest, GitHub Actions.
 
 ## Setup
 
@@ -86,7 +86,7 @@ pip install -r requirements-dev.txt
 python -m pytest -q
 ```
 
-The 64 tests cover the benchmark engine, peer store, company detection, the controversy scoring model, incident grouping, the say-do check, news parsing, the website crawler and the report search filter. API tests run in CI. They use no network and no API key.
+The 70 tests cover the benchmark engine, peer store, company detection, the controversy scoring model, incident grouping, the say-do check, news parsing, the website crawler and the report search filter. API tests run in CI. They use no network and no API key.
 
 ## API
 
@@ -124,6 +124,10 @@ The **say-do check** maps each of the 23 controversy subcategories to report top
 - **Compare claims**: the report does disclose them, with page references to read against the coverage.
 - **Not covered**: the report taxonomy has no matching topic.
 
+## How Controversy Watch counts stay consistent
+
+News is collected once per company for the last 180 days (GDELT plus one Google News query per pillar and one for the last 30 days) and each headline is classified once, at temperature 0, then cached. The 30, 90 and 180-day views are filters over that same set, so a shorter window is always a subset of a longer one and repeated scans agree. The page shows all three counts side by side.
+
 ## How the peer benchmark works
 
 Peers come from the same industry group in `companies.json` (same region first). For each peer the agent finds its latest ESG, BRSR, sustainability or annual report on official sources, downloads it and runs the full pipeline. Results are stored, so a peer is analysed once and reused for about 18 months.
@@ -154,7 +158,7 @@ git add data/benchmarks.json && git commit -m "Seed IT services benchmark" && gi
 - No OCR: scanned PDFs are rejected with a clear message. Tables can extract imperfectly.
 - Retrieval is keyword-based (TF-IDF), not embeddings.
 - Validation proves a quote exists in the PDF, not that the model interpreted it correctly.
-- Controversy Watch reads headlines only, not article bodies, so confidence is modest. Dates are when the source first listed the article.
+- Controversy Watch reads headlines only, not article bodies, so confidence is modest. Dates are when the source first listed the article. A company's news is cached for 6 hours, so new stories appear after that.
 - Severity weights were tuned on synthetic data and have not been calibrated against real outcomes.
 - Company matching is by name, so a common word used as a company name can pull in unrelated headlines.
 - Jobs and news scans are held in memory and lost on restart. There is no sign-in and no rate limiting.

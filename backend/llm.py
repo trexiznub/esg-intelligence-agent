@@ -26,12 +26,18 @@ def get_client():
     return _client
 
 
-def llm_json(prompt, max_tokens=4000):
+def llm_json(prompt, max_tokens=4000, temperature=None):
     client = get_client()
+
+    config = None
+    if temperature is not None:  # 0 makes repeated classifications of the same text agree
+        from google.genai import types
+        config = types.GenerateContentConfig(temperature=temperature)
 
     response = client.models.generate_content(
         model=MODEL,
         contents=prompt,
+        config=config,
     )
 
     text = (response.text or "").strip()

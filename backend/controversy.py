@@ -27,7 +27,10 @@ from urllib.parse import quote_plus, urlparse
 DAY = 86400.0
 HALF_LIFE_DAYS = 45
 INCIDENT_WINDOW_DAYS = 30
-MAX_CLASSIFY = 25
+MAX_WINDOW = 180      # days collected once per company; shorter windows are filtered from it
+MAX_POOL = 150        # most recent articles kept for classification
+BATCH = 30            # headlines per LLM call
+CACHE_TTL = 6 * 3600  # seconds a company's collected news is reused
 
 PILLARS = {
     "E": ["Carbon emissions", "Pollution", "Water management", "Biodiversity", "Waste management",
@@ -362,7 +365,7 @@ def say_do_check(findings: dict, incidents: list) -> list:
 # ---------- news collection (network) ----------
 def _gdelt(company: str, days: int, get) -> list:
     q = f'"{core_name(company)}" {ESG_TERMS} sourcelang:english'
-    url = ("https://api.gdeltproject.org/api/v2/doc/doc?mode=artlist&format=json&maxrecords=60"
+    url = ("https://api.gdeltproject.org/api/v2/doc/doc?mode=artlist&format=json&maxrecords=250"
            f"&sort=datedesc&timespan={days}d&query={quote_plus(q)}")
     body = get(url)
     if not body.lstrip().startswith("{"):
@@ -378,8 +381,32 @@ def _gdelt(company: str, days: int, get) -> list:
     return out
 
 
+GN_TERMS = {
+    "E": "(pollution OR emissions OR environmental OR spill OR effluent OR greenwashing OR tribunal OR deforestation)",
+    "S": "(workers OR safety OR accident OR strike OR \"human rights\" OR labour OR layoffs OR discrimination OR recall)",
+    "G": "(fraud OR bribery OR probe OR penalty OR fine OR lawsuit OR regulator OR SEBI OR \"data breach\" OR whistleblower)",
+}
+
+
 def _google_news(company: str, days: int, get) -> list:
-    q = f'"{core_name(company)}" (pollution OR safety OR fraud OR probe OR penalty OR lawsuit OR strike OR regulator) when:{days}d'
+    """One RSS query per pillar over the full window, plus one for the last 30 days.
+
+    Google News returns at most ~100 items per query, ranked by relevance, so splitting
+    the query keeps recent and less prominent stories from being crowded out."""
+    out, failures = [], 0
+    queries = [(t, days) for t in GN_TERMS.values()] + [(" OR ".join(GN_TERMS.values()), min(days, 30))]
+    for terms, d in queries:
+        try:
+            out += _google_news_query(company, terms, d, get)
+        except Exception:  # noqa: BLE001
+            failures += 1
+    if failures == len(queries):
+        raise ConnectionError("all Google News queries failed")
+    return out
+
+
+def _google_news_query(company: str, terms: str, days: int, get) -> list:
+    q = f'"{core_name(company)}" {terms} when:{days}d'
     xml = get(f"https://news.google.com/rss/search?hl=en-IN&gl=IN&ceid=IN:en&q={quote_plus(q)}")[:2_000_000]
     out = []
     tag = lambda item, name: html.unescape(re.sub(r"<!\[CDATA\[(.*?)\]\]>|<[^>]+>", r"\1", (re.search(
@@ -443,19 +470,70 @@ def analyse(company: str, articles: list, classes: list, findings: dict | None =
     }
 
 
-def scan(company: str, days: int = 90, findings: dict | None = None, llm_json=None) -> dict:
-    """Full run for one company. `llm_json` is injected so the module has no hard LLM dependency."""
-    articles, notes = collect_news(company, days)
-    articles = articles[:MAX_CLASSIFY]
-    classifier = "rules"
-    classes = [rule_classify(a["headline"]) for a in articles]
-    if llm_json and articles:
-        try:
-            classes = llm_classify(company, articles, llm_json)
-            classifier = "llm"
-        except Exception as e:  # noqa: BLE001 - fall back to labelled keyword rules
-            notes.append(f"LLM classification failed ({type(e).__name__}); keyword rules used instead")
-    result = analyse(company, articles, classes, findings)
-    result.update(days=days, classifier=classifier, sources=notes,
+_MASTER: dict = {}  # company key -> {"at", "articles", "notes"}
+_CLASS: dict = {}   # (company key, story key) -> classification
+
+
+def _story_key(a: dict) -> str:
+    return _norm_title(a["headline"])
+
+
+def _classify_pool(key: str, company: str, pool: list, llm_json, notes: list) -> None:
+    """Classifies each story once. LLM results are cached; rule results are cached only when no LLM is set."""
+    todo = [a for a in pool if (key, _story_key(a)) not in _CLASS]
+    for i in range(0, len(todo), BATCH):
+        batch = todo[i:i + BATCH]
+        if llm_json:
+            try:
+                for a, c in zip(batch, llm_classify(company, batch, llm_json)):
+                    _CLASS[(key, _story_key(a))] = c
+                continue
+            except Exception as e:  # noqa: BLE001 - fall back to labelled keyword rules for this batch
+                notes.append(f"LLM classification failed for {len(batch)} headlines ({type(e).__name__}); "
+                             "keyword rules used and will be retried")
+                for a in batch:
+                    _CLASS[(key, _story_key(a), "tmp")] = rule_classify(a["headline"])
+                continue
+        for a in batch:
+            _CLASS[(key, _story_key(a))] = rule_classify(a["headline"])
+
+
+def _class_for(key: str, a: dict) -> dict:
+    return _CLASS.get((key, _story_key(a))) or _CLASS.get((key, _story_key(a), "tmp")) or rule_classify(a["headline"])
+
+
+def scan(company: str, days: int = 90, findings: dict | None = None, llm_json=None, now: float | None = None,
+         get=_http_get) -> dict:
+    """News scan for one company over the last `days` (7-180).
+
+    News is collected once for 180 days and each story is classified once, then cached.
+    Every window is a filter over that same set, so a 30-day scan is always a subset of a
+    90-day scan, which is a subset of a 180-day scan, and repeated scans agree."""
+    now = now or time.time()
+    days = max(7, min(MAX_WINDOW, int(days)))
+    key = core_name(company).lower()
+    m = _MASTER.get(key)
+    if not m or now - m["at"] > CACHE_TTL:
+        articles, notes = collect_news(company, MAX_WINDOW, get)
+        m = _MASTER[key] = {"at": now, "articles": articles[:MAX_POOL], "notes": notes}
+    notes = list(m["notes"])
+    pool = m["articles"]
+    _classify_pool(key, company, pool, llm_json, notes)
+
+    def window(d):
+        arts = [a for a in pool if a["ts"] >= now - d * DAY]
+        return arts, [_class_for(key, a) for a in arts]
+
+    articles, classes = window(days)
+    result = analyse(company, articles, classes, findings, now)
+    counts = {}
+    for d in (30, 90, 180):
+        arts, cls = window(d)
+        incs = build_incidents(arts, cls)
+        counts[str(d)] = {"articles": len(arts), "relevant": sum(len(i["stories"]) for i in incs), "incidents": len(incs)}
+    kinds = {c["classifier"] for c in classes}
+    result.update(days=days, windows=counts, sources=notes,
+                  classifier="llm" if kinds == {"llm"} else "rules" if kinds <= {"rules"} else "mixed",
+                  collected_at=datetime.fromtimestamp(m["at"], timezone.utc).isoformat(timespec="seconds"),
                   generated_at=datetime.now(timezone.utc).isoformat(timespec="seconds"))
     return result

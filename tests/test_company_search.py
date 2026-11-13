@@ -70,8 +70,9 @@ def test_search_filters_ranks_and_dedupes():
 
     out = cs.search_company_reports("tcs", search=fake, crawl_fn=NO_SITE, use_cache=False)
     assert out["company"] == "Tata Consultancy Services"
-    assert [r["source"] for r in out["reports"]] == ["tcs.com", "tcs.com"]
-    assert out["reports"][0]["year"] == "2024-25" and out["reports"][0]["pdf"] is True
+    found = [r for r in out["reports"] if r["via"] != "verified"]
+    assert [r["source"] for r in found] == ["tcs.com", "tcs.com"]
+    assert found[0]["year"] == "2024-25" and found[0]["pdf"] is True
     assert all(q.startswith(("site:tcs.com", '"Tata')) for q, _ in calls)
     assert calls[0][1] == "in-en"
 
@@ -81,7 +82,7 @@ def test_search_survives_failing_queries():
         raise RuntimeError("rate limited")
 
     out = cs.search_company_reports("Microsoft", search=broken, crawl_fn=NO_SITE, use_cache=False)
-    assert out["count"] == 0 and out["official_site"] == "https://microsoft.com"
+    assert all(r["via"] == "verified" for r in out["reports"]) and out["official_site"] == "https://microsoft.com"
 
 
 def test_website_results_win_when_the_search_engine_is_blocked():
@@ -94,9 +95,9 @@ def test_website_results_win_when_the_search_engine_is_blocked():
                 "pages": [{"url": "https://www.infosys.com/sustainability.html", "title": "Sustainability | Infosys"}],
                 "notes": ["website: 5 pages read, 1 report PDFs found"]}
 
-    out = cs.search_company_reports("infosys", search=blocked, crawl_fn=site, use_cache=False)
-    assert [r["pdf"] for r in out["reports"]] == [True, False]
-    assert out["reports"][0]["via"] == "website" and out["reports"][0]["year"] == "2024-25"
+    out = cs.search_company_reports("hul", search=blocked, crawl_fn=site, use_cache=False)
+    web = [r for r in out["reports"] if r["via"] == "website"]
+    assert [r["pdf"] for r in web] == [True, False] and web[0]["year"] == "2024-25"
     assert any("failed" in n for n in out["checked"])
 
 
@@ -106,4 +107,27 @@ def test_crawler_failure_does_not_hide_search_results():
 
     page = [{"href": "https://www.tcs.com/esg/tcs-esg-report-2023-24.pdf", "title": "TCS ESG Report 2023-24", "body": ""}]
     out = cs.search_company_reports("tcs", search=lambda q, r: page, crawl_fn=boom, use_cache=False)
-    assert out["count"] == 1 and "website: failed (TimeoutError)" in out["checked"]
+    assert sum(r["via"] == "search" for r in out["reports"]) == 1 and "website: failed (TimeoutError)" in out["checked"]
+
+
+def test_bank_domains_moved_to_bank_in():
+    assert cs.resolve("HDFC Bank")["domains"][0] == "hdfc.bank.in"
+    assert cs.accept(cs.resolve("SBI"), "https://bank.sbi/corporate/SBIAR2425/pdf/SBI-AR-2025-BRSR.pdf", "SBI BRSR 2024-25", "")
+
+
+def test_verified_reports_appear_even_when_everything_else_fails():
+    def blocked(query, region):
+        raise RuntimeError("blocked")
+
+    out = cs.search_company_reports("infosys", search=blocked, crawl_fn=NO_SITE, use_cache=False)
+    first = out["reports"][0]
+    assert first["via"] == "verified" and first["pdf"] and first["year"] == "2025-26"
+    assert any(not r["pdf"] and r["via"] == "verified" for r in out["reports"])  # official page link
+
+
+def test_curated_links_stay_on_official_domains():
+    for c in cs.load_catalog():
+        for r in c.get("reports", []):
+            assert r["url"].startswith("https://") and cs.on_domain(cs.host_of(r["url"]), c["domains"]), r["url"]
+        for u in c.get("pages", []):
+            assert cs.on_domain(cs.host_of(u), c["domains"]), u

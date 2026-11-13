@@ -37,9 +37,7 @@ app.add_middleware(
 
 MAX_MB = 100
 MAX_JOBS = 50          # finished jobs kept in memory
-SCAN_TTL = 30 * 60     # seconds a news scan is cached
 JOBS: dict = {}
-SCANS: dict = {}
 
 
 def _has_key() -> bool:
@@ -170,21 +168,14 @@ def controversies(payload: dict):
     job_data = JOBS.get(str(payload.get("job_id", ""))) or {}
     findings = (job_data.get("result") or {}).get("f")
 
-    key = (company.lower(), days)
-    cached = SCANS.get(key)
-    if cached and time.time() - cached["at"] < SCAN_TTL:
-        scan = cached["scan"]
-    else:
-        llm_json = None
-        if _has_key():
-            from backend.llm import llm_json
-        try:
-            scan = controversy.scan(company, days, None, llm_json)
-        except Exception as e:
-            raise HTTPException(502, f"News scan failed: {str(e)[:300]}")
-        for old in [k for k, v in SCANS.items() if time.time() - v["at"] >= SCAN_TTL]:
-            del SCANS[old]
-        SCANS[key] = {"at": time.time(), "scan": scan}
+    llm = None
+    if _has_key():
+        from backend.llm import llm_json
+        llm = lambda prompt: llm_json(prompt, temperature=0)  # noqa: E731 - same headline, same answer
+    try:
+        scan = controversy.scan(company, days, None, llm)
+    except Exception as e:
+        raise HTTPException(502, f"News scan failed: {str(e)[:300]}")
 
     # The say-do check depends on the caller's report, so it is added per request, not cached.
     return {**scan, "say_do": controversy.say_do_check(findings, scan["incidents"]) if findings else []}

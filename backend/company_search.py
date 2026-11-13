@@ -179,6 +179,13 @@ def search_company_reports(company: str, search=_ddgs_search, crawl_fn=None, use
             except Exception as e:  # noqa: BLE001 - one source failing must not hide the other
                 notes.append(f"{'website' if job is site_job else 'search engine'}: failed ({type(e).__name__})")
 
+    # Verified official links from companies.json come first: they work even when a website
+    # blocks automated visitors and the search engine returns nothing.
+    curated = [{"url": r["url"], "title": r["title"], "summary": "Verified link to the company's official report",
+                "via": "verified", "year": r.get("year"), "type": r.get("type")} for r in c.get("reports", [])]
+    curated += [{"url": u, "title": f"{c['name']}: official ESG / sustainability page", "via": "verified",
+                 "summary": "Official page listing the company's reports"} for u in c.get("pages", [])]
+    found = curated + found
     seen, results = set(), []
     for r in found:
         key = r["url"].split("#")[0].split("?")[0].rstrip("/").lower().replace("://www.", "://")
@@ -188,9 +195,10 @@ def search_company_reports(company: str, search=_ddgs_search, crawl_fn=None, use
         text = f"{r['title']} {r['url']}"
         pdf = r["url"].lower().split("?")[0].endswith(".pdf")
         results.append({
-            "title": r["title"], "year": report_year(text) or "See document", "type": report_type(text),
+            "title": r["title"], "year": r.get("year") or report_year(text) or "See document",
+            "type": r.get("type") or report_type(text),
             "url": r["url"], "source": host_of(r["url"]), "summary": r["summary"], "pdf": pdf, "via": r["via"],
-            "_score": score(r["url"], r["title"], r["summary"]) + (3 if pdf else -4),
+            "_score": score(r["url"], r["title"], r["summary"]) + (3 if pdf else -4) + (6 if r["via"] == "verified" else 0),
         })
     results.sort(key=lambda r: (r["pdf"], r["year"] if r["year"][:2] == "20" else "0", r["_score"]), reverse=True)
     for r in results:
